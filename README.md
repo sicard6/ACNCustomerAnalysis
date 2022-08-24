@@ -1,4 +1,4 @@
-# ACNCustomerAnalisys
+# ACNCustomerAnalysis
 Repositorio para tener el analisis holisticio de los clientes
 # Responsables NLP
  - Julian Castellanos
