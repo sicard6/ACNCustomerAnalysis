@@ -31,6 +31,9 @@ def existedb(url: str, fuente: str):
     db = pd.read_csv(f"../data/raw/{fuente}.csv",encoding='latin-1')
     return True if (db["URL"].eq(url)).any() else False
 
+def guardar_articulo(articulo: pd.DataFrame):
+    if not(existedb(articulo['URL'])):
+        print('')
 
 
 
