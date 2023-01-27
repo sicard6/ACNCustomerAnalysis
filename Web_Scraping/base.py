@@ -225,24 +225,3 @@ def obtener_articulos_relacionados_eltiempo(driver: sel.webdriver.Edge):
         relNewsUrls = []
     return relNewsUrls
 
-
-def obtener_contenido_eltiempo(driver: sel.webdriver.Edge):
-    """Funcion que itera sobre todos los parrafos del articulo y los extrae.
-
-    Args:
-        driver (sel.webdriver.Edge): driver de selenium
-
-    Returns:
-        str: devuelve el contenido del articulo
-    """
-    contenido = ''
-    try :
-        html = driver.find_element(By.XPATH,'.//div[contains(@class,"html-content")]')
-        parrafos = html.find_elements(By.XPATH,'.//p')
-    except:
-        contenido = 'SIN PARRAFOS'
-    else:
-        for i in parrafos:
-            contenido += i.text
-       
-    return contenido
