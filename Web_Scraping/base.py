@@ -198,3 +198,51 @@ def obtener_contenido_republica(driver: sel.webdriver.Edge):
             contenido += i.text
        
     return contenido
+
+
+
+
+#---------------------------------------------------------
+#------------- EL TIEMPO ------------------------------
+#---------------------------------------------------------
+
+
+def obtener_articulos_relacionados_eltiempo(driver: sel.webdriver.Edge):
+    """Obtener los articulos relacionados a un articulo
+
+    Args:
+        driver (sel.webdriver.Edge): referencia al driver de selenium
+
+    Returns:
+        List: lista de articulos relacionados
+    """
+    relNewsUrls = []
+    try :
+        related = driver.find_elements(By.XPATH,'.//div[contains(@class,"relatedNews")]')
+        for i in related:
+            relNewsUrls.append(i.find_element(By.XPATH,'.//a').get_attribute('href'))
+    except:
+        relNewsUrls = []
+    return relNewsUrls
+
+
+def obtener_contenido_eltiempo(driver: sel.webdriver.Edge):
+    """Funcion que itera sobre todos los parrafos del articulo y los extrae.
+
+    Args:
+        driver (sel.webdriver.Edge): driver de selenium
+
+    Returns:
+        str: devuelve el contenido del articulo
+    """
+    contenido = ''
+    try :
+        html = driver.find_element(By.XPATH,'.//div[contains(@class,"html-content")]')
+        parrafos = html.find_elements(By.XPATH,'.//p')
+    except:
+        contenido = 'SIN PARRAFOS'
+    else:
+        for i in parrafos:
+            contenido += i.text
+       
+    return contenido
