@@ -4,6 +4,7 @@ import pandas as pd
 import time
 import datetime
 import re
+import sys
 
 import os as os
 import csv
@@ -27,7 +28,7 @@ def existedb(url: str, fuente: str):
     Returns:
         Bool: False si la url existe, True si no existe
     """
-
+    
     db = pd.read_csv(f"../data/raw/{fuente}.csv", encoding='latin-1')
     return True if (db["URL"].eq(url)).any() else False
 
@@ -51,25 +52,7 @@ def existedbMod(url: str, archivo: str):
         return True if (db["URL"].eq(url)).any() else False
 
 
-def create_add(nombre_archivo: str, columnas: list, lista: list):
-    """Función para agregar lineas a un archivo csv dado el caso que exista
-    o crearlo en caso contrario
-
-    Args:
-        nombre_archivo (str): nombre del archivo a crear o modificar
-        columnas (list): nombre de las columnas del archivo csv
-        titulares (list): lista de diccionarios con los registros a agregar
-    """
-    try:
-        with open('../data/raw/{nombre_archivo}.csv', 'a', newline='', errors='ignore') as csv_file:
-            dict_object = csv.DictWriter(csv_file, fieldnames=columnas)
-            dict_object.writerows(lista)
-    except:
-        pd.json_normalize(lista).to_csv(
-            f'../data/raw/{nombre_archivo}.csv', index=False, encoding='latin-1', errors='ignore', columns=columnas)
-
-
-def writeData(nombre_archivo: str, datos: pd.DataFrame):
+def writeData(nombre_archivo: str, datos: pd.DataFrame, fuente: str, tag: str):
     """Función que concatena dataFrames y los guarda como csv.
     En caso de que no exista el archivo al que se quiere concatenar
     se crea uno con el mismo nombre
@@ -79,11 +62,13 @@ def writeData(nombre_archivo: str, datos: pd.DataFrame):
         nombre del archivo nuevo
         datos (pd.DataFrame): datos a ser concatenados o guardados como csv
     """
+    datos['tag'] = tag
+    datos['fuente']= fuente
     try:
         df = pd.read_csv(f'../data/raw/{nombre_archivo}.csv')
         df = pd.concat([df, datos])
         df.to_csv(f'../data/raw/{nombre_archivo}.csv')
-    except:
+    except FileNotFoundError:
         datos.to_csv(f'../data/raw/{nombre_archivo}.csv')
 
 # ---------------------------------------------------------
