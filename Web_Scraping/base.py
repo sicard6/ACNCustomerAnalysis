@@ -49,7 +49,7 @@ def writeData(nombre_archivo: str, datos: pd.DataFrame):
         df = pd.read_csv(f'../data/raw/{nombre_archivo}.csv')
         df = pd.concat([df, datos])
         df.to_csv(f'../data/raw/{nombre_archivo}.csv')
-    except:
+    except FileNotFoundError:
         datos.to_csv(f'../data/raw/{nombre_archivo}.csv')
 
 # ---------------------------------------------------------
