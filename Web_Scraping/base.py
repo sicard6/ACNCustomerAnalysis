@@ -35,6 +35,10 @@ def existedb(url: str, fuente: str):
         return True if (db["URL"].eq(url)).any() else False
 
 
+def guardar_articulo(articulo: pd.DataFrame):
+    if not(existedb(articulo['URL'])):
+        print('')
+        
 def writeData(nombre_archivo: str, datos: pd.DataFrame):
     """Función que concatena dataFrames y los guarda como csv.
     En caso de que no exista el archivo al que se quiere concatenar
@@ -230,5 +234,31 @@ def obtener_contenido_republica(driver: sel.webdriver.Edge):
     else:
         for i in parrafos:
             contenido += i.text
-
     return contenido
+
+
+
+
+#---------------------------------------------------------
+#------------- EL TIEMPO ---------------------------------
+#---------------------------------------------------------
+
+
+def obtener_articulos_relacionados_eltiempo(driver: sel.webdriver.Edge):
+    """Obtener los articulos relacionados a un articulo
+
+    Args:
+        driver (sel.webdriver.Edge): referencia al driver de selenium
+
+    Returns:
+        List: lista de articulos relacionados
+    """
+    relNewsUrls = []
+    try :
+        related = driver.find_elements(By.XPATH,'.//div[contains(@class,"relatedNews")]')
+        for i in related:
+            relNewsUrls.append(i.find_element(By.XPATH,'.//a').get_attribute('href'))
+    except:
+        relNewsUrls = []
+    return relNewsUrls
+
