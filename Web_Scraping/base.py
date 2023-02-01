@@ -4,7 +4,6 @@ import pandas as pd
 import time
 import datetime
 import re
-import sys
 
 import os as os
 import csv
@@ -28,31 +27,15 @@ def existedb(url: str, fuente: str):
     Returns:
         Bool: False si la url existe, True si no existe
     """
-    
-    db = pd.read_csv(f"../data/raw/{fuente}.csv", encoding='latin-1')
-    return True if (db["URL"].eq(url)).any() else False
-
-
-def existedbMod(url: str, archivo: str):
-    """Funcion que verifica si una url existe en la base de datos o si
-    existe el archivo
-    Args:
-        url (str): url del articulo a verificar
-
-    Returns:
-        Bool: False si la url existe, True si no existe la url o 
-        el archivo
-    """
-    # Dado el caso que no exista el csv retorna False
     try:
-        db = pd.read_csv(f"../data/raw/{archivo}.csv", encoding='latin-1')
-    except:
-        return True
+        db = pd.read_csv(f"../data/raw/{fuente}.csv", encoding='latin-1')
+    except FileNotFoundError:
+        return False
     else:
         return True if (db["URL"].eq(url)).any() else False
 
 
-def writeData(nombre_archivo: str, datos: pd.DataFrame, fuente: str, tag: str):
+def writeData(nombre_archivo: str, datos: pd.DataFrame):
     """Función que concatena dataFrames y los guarda como csv.
     En caso de que no exista el archivo al que se quiere concatenar
     se crea uno con el mismo nombre
@@ -62,13 +45,11 @@ def writeData(nombre_archivo: str, datos: pd.DataFrame, fuente: str, tag: str):
         nombre del archivo nuevo
         datos (pd.DataFrame): datos a ser concatenados o guardados como csv
     """
-    datos['tag'] = tag
-    datos['fuente']= fuente
     try:
         df = pd.read_csv(f'../data/raw/{nombre_archivo}.csv')
         df = pd.concat([df, datos])
         df.to_csv(f'../data/raw/{nombre_archivo}.csv')
-    except FileNotFoundError:
+    except:
         datos.to_csv(f'../data/raw/{nombre_archivo}.csv')
 
 # ---------------------------------------------------------
