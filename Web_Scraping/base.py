@@ -31,6 +31,9 @@ def existedb(url: str, fuente: str):
     db = pd.read_csv(f"../data/raw/{fuente}.csv",encoding='latin-1')
     return True if (db["URL"].eq(url)).any() else False
 
+def guardar_articulo(articulo: pd.DataFrame):
+    if not(existedb(articulo['URL'])):
+        print('')
 
 
 
@@ -198,3 +201,30 @@ def obtener_contenido_republica(driver: sel.webdriver.Edge):
             contenido += i.text
        
     return contenido
+
+
+
+
+#---------------------------------------------------------
+#------------- EL TIEMPO ---------------------------------
+#---------------------------------------------------------
+
+
+def obtener_articulos_relacionados_eltiempo(driver: sel.webdriver.Edge):
+    """Obtener los articulos relacionados a un articulo
+
+    Args:
+        driver (sel.webdriver.Edge): referencia al driver de selenium
+
+    Returns:
+        List: lista de articulos relacionados
+    """
+    relNewsUrls = []
+    try :
+        related = driver.find_elements(By.XPATH,'.//div[contains(@class,"relatedNews")]')
+        for i in related:
+            relNewsUrls.append(i.find_element(By.XPATH,'.//a').get_attribute('href'))
+    except:
+        relNewsUrls = []
+    return relNewsUrls
+
