@@ -35,10 +35,6 @@ def existedb(url: str, fuente: str):
         return True if (db["URL"].eq(url)).any() else False
 
 
-def guardar_articulo(articulo: pd.DataFrame):
-    if not(existedb(articulo['URL'])):
-        print('')
-        
 def writeData(nombre_archivo: str, datos: pd.DataFrame):
     """Función que concatena dataFrames y los guarda como csv.
     En caso de que no exista el archivo al que se quiere concatenar
