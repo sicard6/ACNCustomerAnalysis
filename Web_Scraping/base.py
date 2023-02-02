@@ -28,7 +28,7 @@ def existedb(url: str, fuente: str):
         Bool: False si la url existe, True si no existe
     """
     try:
-        db = pd.read_csv(f"../data/raw/{fuente}.csv", encoding='latin-1')
+        db = pd.read_csv(f"./data/raw/{fuente}.csv", encoding='latin-1')
     except FileNotFoundError:
         return False
     else:
@@ -48,9 +48,9 @@ def writeData(nombre_archivo: str, datos: pd.DataFrame):
     try:
         df = pd.read_csv(f'../data/raw/{nombre_archivo}.csv')
         df = pd.concat([df, datos])
-        df.to_csv(f'../data/raw/{nombre_archivo}.csv')
+        df.to_csv(f'./data/raw/{nombre_archivo}.csv')
     except FileNotFoundError:
-        datos.to_csv(f'../data/raw/{nombre_archivo}.csv')
+        datos.to_csv(f'./data/raw/{nombre_archivo}.csv')
 
 # ---------------------------------------------------------
 # ------------- SEMANA ------------------------------------
@@ -233,11 +233,9 @@ def obtener_contenido_republica(driver: sel.webdriver.Edge):
     return contenido
 
 
-
-
-#---------------------------------------------------------
-#------------- EL TIEMPO ---------------------------------
-#---------------------------------------------------------
+# ---------------------------------------------------------
+# ------------- EL TIEMPO ---------------------------------
+# ---------------------------------------------------------
 
 
 def obtener_articulos_relacionados_eltiempo(driver: sel.webdriver.Edge):
@@ -250,11 +248,12 @@ def obtener_articulos_relacionados_eltiempo(driver: sel.webdriver.Edge):
         List: lista de articulos relacionados
     """
     relNewsUrls = []
-    try :
-        related = driver.find_elements(By.XPATH,'.//div[contains(@class,"relatedNews")]')
+    try:
+        related = driver.find_elements(
+            By.XPATH, './/div[contains(@class,"relatedNews")]')
         for i in related:
-            relNewsUrls.append(i.find_element(By.XPATH,'.//a').get_attribute('href'))
+            relNewsUrls.append(i.find_element(
+                By.XPATH, './/a').get_attribute('href'))
     except:
         relNewsUrls = []
     return relNewsUrls
-
