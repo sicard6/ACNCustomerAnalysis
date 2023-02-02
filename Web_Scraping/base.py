@@ -14,10 +14,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-
 # ---------------------------------------------------------
 # ------------- GLOBAL ------------------------------------
 # ---------------------------------------------------------
+
 
 def existedb(url: str, fuente: str):
     """Funcion que verifica si una url existe en la base de datos
@@ -46,7 +46,7 @@ def writeData(nombre_archivo: str, datos: pd.DataFrame):
         datos (pd.DataFrame): datos a ser concatenados o guardados como csv
     """
     try:
-        df = pd.read_csv(f'../data/raw/{nombre_archivo}.csv')
+        df = pd.read_csv(f'./data/raw/{nombre_archivo}.csv')
         df = pd.concat([df, datos])
         df.to_csv(f'./data/raw/{nombre_archivo}.csv')
     except FileNotFoundError:
@@ -237,23 +237,66 @@ def obtener_contenido_republica(driver: sel.webdriver.Edge):
 # ------------- EL TIEMPO ---------------------------------
 # ---------------------------------------------------------
 
-
-def obtener_articulos_relacionados_eltiempo(driver: sel.webdriver.Edge):
-    """Obtener los articulos relacionados a un articulo
+def obtener_articulos_eltiempo(driver: sel.webdriver.Edge, url: str, titulares, empresa):
+    """obtiene los ariculos de una pagina del tiempo dada la url.
+        'https://www.eltiempo.com/buscar?q={empresa}'
+        'https://www.eltiempo.com/buscar/{i}?q={empresa}'
 
     Args:
-        driver (sel.webdriver.Edge): referencia al driver de selenium
-
-    Returns:
-        List: lista de articulos relacionados
+        driver (sel.webdriver.Edge): driver de selenium
+        url (str): _description_
+        titulares (_type_): _description_
+        empresa: es la empresa a la que se está buscando
     """
-    relNewsUrls = []
-    try:
-        related = driver.find_elements(
-            By.XPATH, './/div[contains(@class,"relatedNews")]')
-        for i in related:
-            relNewsUrls.append(i.find_element(
-                By.XPATH, './/a').get_attribute('href'))
-    except:
-        relNewsUrls = []
-    return relNewsUrls
+    driver.get(url)
+    driver.implicitly_wait(10)
+    buscar = driver.find_element(
+        By.XPATH, '//*[@id="main-container"]/div[16]/div[2]/div[2]/div[2]/div')
+    articulos = buscar.find_elements(By.CLASS_NAME, "listing")
+
+    for articulos in articulos:
+        aux = articulos.find_element(
+            By.XPATH, './/h3[contains(@class, "title-container")]')
+        url = aux.find_element(By.XPATH, './/a').get_attribute('href')
+        # print(url)
+        if not (existedb(url, "eltiempo")):
+            titulo = articulos.find_element(
+                By.CLASS_NAME, "title-container").text
+            # print(titulo)
+            resumen = articulos.find_element(
+                By.CLASS_NAME, "epigraph-container").text
+            # print(resumen)
+            fechaPub = articulos.find_element(
+                By.CLASS_NAME, "published-at").text
+            # print(fechaPub)
+            tema = articulos.find_element(By.CLASS_NAME, "category").text
+            # print(tema)
+            titulares.append({'Fecha Extraccion': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                              'Titulo': titulo,
+                              'Fecha Publicacion': fechaPub,
+                              'Tema': tema,
+                              'URL': url,
+                              'Resumen': resumen,
+                              'Empresa': empresa})
+
+
+def obtener_articulos_eltiempo_dataframe(driver: sel.webdriver.Edge, url: str, titulares, empresa):
+    """obtiene los ariculos de una pagina del tiempo dada la url con titulares en tipo pd.dataframe
+        'https://www.eltiempo.com/buscar?q={empresa}'
+        'https://www.eltiempo.com/buscar/{i}?q={empresa}'
+
+    Args:
+        driver (sel.webdriver.Edge): _description_
+        url (str): _description_
+        titulares (_type_): _description_
+        empresa (_type_): _description_
+    """
+    driver.get(url)
+    driver.implicitly_wait(10)
+    buscar = driver.find_element(
+        By.XPATH, '//*[@id="main-container"]/div[16]/div[2]/div[2]/div[2]/div')
+    articulos = buscar.find_elements(By.CLASS_NAME, "listing")
+
+    titulares = titulares + "hola"
+
+    empresa = empresa+"hellow"
