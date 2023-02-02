@@ -1,8 +1,12 @@
 {
-    "LaRepublica": {
-        "clientes":["Ecopetrol","Enel"]
-    },
-    "Semana": {
-        "clientes":["Ecopetrol","Enel"]
+    "medios":{
+        "LaRepublica": {
+            "clientes":["Ecopetrol","Enel"]
+        },
+        "Semana": {
+            "clientes":["Ecopetrol","Enel"]
+        }
     }
+
+
 }

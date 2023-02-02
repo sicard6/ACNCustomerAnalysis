@@ -25,7 +25,7 @@ def existedb(url: str, fuente: str):
         url (str): url del articulo a verificar
 
     Returns:
-        Bool: False si la url existe, True si no existe
+        Bool: False si la url no existe o no encuentra la base de datos, True si no existe
     """
     try:
         db = pd.read_csv(f"./data/raw/{fuente}.csv", encoding='latin-1')
