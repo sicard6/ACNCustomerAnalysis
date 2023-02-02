@@ -78,7 +78,8 @@ for art in articulos:
                           'Resumen': resumen,
                           'URL': url,
                           'Imagen': imagen,
-                          'Empresa': empresa})
+                          'Empresa': empresa,
+                          'Fuente': 'Semana'})
 
 # %%
 # busca los autores de cada articulo y las almacena en la lista de titulares
@@ -94,9 +95,6 @@ for tit in titulares:
 
     # agregar contenido al dict de titulares
     tit['Tema'] = bs.obtener_tema(driver)
-
-    # agregar fuente al dict de titulares
-    tit['Fuente'] = 'Semana'
 
 # %%
 df = pd.DataFrame(titulares)

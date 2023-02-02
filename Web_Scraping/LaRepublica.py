@@ -38,7 +38,8 @@ if not (bs.existedb(urlPrinc, "larepublica")):  # Si no existe (elimine el .csv)
                       'Tema': temaPrinc,
                       'URL': urlPrinc,
                       'Imagen': imagenPrinc,
-                      'Empresa': empresa})
+                      'Empresa': empresa,
+                      'Fuente': 'La República'})
 
 # el resto, autor, resumen, contenido y relacionados se sacan entrando a la url
 # despues de guardar articulos normales. Mismo para las otras dos noticias principales
@@ -67,7 +68,8 @@ for art in articulos:
                           'Resumen': resumen,
                           'URL': url,
                           'Imagen': imagen,
-                          'Empresa': empresa})
+                          'Empresa': empresa,
+                          'Fuente': 'La República'})
 
 
 # %%
