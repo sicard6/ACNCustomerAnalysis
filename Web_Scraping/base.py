@@ -46,8 +46,8 @@ def writeData(nombre_archivo: str, datos: pd.DataFrame):
         datos (pd.DataFrame): datos a ser concatenados o guardados como csv
     """
     try:
-        df = pd.read_csv(f'./data/raw/{nombre_archivo}.csv')
-        df = pd.concat([df, datos])
+        df = pd.read_csv(f'./data/raw/{nombre_archivo}.csv', index_col=[0])
+        df = pd.concat([df, datos], ignore_index=True)
         df.to_csv(f'./data/raw/{nombre_archivo}.csv')
     except FileNotFoundError:
         datos.to_csv(f'./data/raw/{nombre_archivo}.csv')
@@ -259,7 +259,7 @@ def obtener_articulos_eltiempo(driver: sel.webdriver.Edge, url: str, titulares, 
             By.XPATH, './/h3[contains(@class, "title-container")]')
         url = aux.find_element(By.XPATH, './/a').get_attribute('href')
         # print(url)
-        if not (existedb(url, "eltiempo")):
+        if not (existedb(url, "database")):
             titulo = articulos.find_element(
                 By.CLASS_NAME, "title-container").text
             # print(titulo)
