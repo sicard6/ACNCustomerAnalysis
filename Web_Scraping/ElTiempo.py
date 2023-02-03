@@ -63,7 +63,6 @@ driver.delete_all_cookies()
 
 # Busca cada articulo y las almacena en la lista de titulares
 for tit in titulares:
-
     driver.get(tit['URL'])
     driver.implicitly_wait(10)  # Nueva metodología de wait
 

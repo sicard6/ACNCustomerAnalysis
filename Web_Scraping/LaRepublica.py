@@ -27,7 +27,7 @@ titulares = []
 princip = driver.find_element(
     By.XPATH, './/div[contains(@class,"first-news")]')
 urlPrinc = princip.find_elements(By.XPATH, './/a')[1].get_attribute('href')
-if not (bs.existedb(urlPrinc, "larepublica")):  # Si no existe (elimine el .csv)
+if not (bs.existedb(urlPrinc, "database")):  # Si no existe (elimine el .csv)
     temaPrinc = princip.find_elements(By.XPATH, './/a')[1].text
     fechaPrinc = princip.find_element(By.XPATH, './/span').text
     tituloPrinc = princip.find_elements(By.XPATH, './/a')[2].text
