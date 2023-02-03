@@ -54,7 +54,7 @@ articulos = driver.find_elements(
 # Itera por cada articulo y extrae la informacion (CASO DE QUE YA EXISTA ARCHIVO DONDE SE ALMACENA)
 for art in articulos:
     url = art.find_elements(By.XPATH, './/a')[1].get_attribute('href')
-    if not (bs.existedb(url, "larepublica")):  # Agregar la fuente para que corra la función .existedb
+    if not (bs.existedb(url, "database")):  # Agregar la fuente para que corra la función .existedb
         fechaP = art.find_element(
             By.XPATH, './/span[@class = "date-news"]').text
         tema = art.find_elements(By.XPATH, './/a')[1].text
