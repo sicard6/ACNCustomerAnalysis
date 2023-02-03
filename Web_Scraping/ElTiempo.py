@@ -6,7 +6,7 @@ import selenium as sel
 from selenium.webdriver.common.by import By
 import pandas as pd
 import time
-import datetime
+from datetime import datetime
 import base as bs
 
 import json
@@ -25,16 +25,9 @@ from selenium.webdriver.support import expected_conditions as EC
 # Web Scraping El tiempo
 
 # %%
-f = open('config.json')
-empresas = json.load(f)
-
-if not os.path.exists('../data/raw/eltiempo.csv'):
-    os.makedirs('../data/raw/eltiempo.csv')
-
-
-# %%
 # Empresa con la cual vamos a extraer los articulos
-empresa = str.lower(sys.argv[1])  # input("Digite la empresa a extraer: ")
+# str.lower(sys.argv[1])  # input("Digite la empresa a extraer: ")
+empresa = 'ecopetrol'
 paginas = 5  # input("la cantidad de paginas ")
 
 # %%

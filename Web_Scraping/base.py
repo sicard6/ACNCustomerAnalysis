@@ -272,7 +272,7 @@ def obtener_articulos_eltiempo(driver: sel.webdriver.Edge, url: str, titulares, 
                 By.CLASS_NAME, "published-at").text
             aux_1 = aux.split()
             aux_1.remove('DE')
-            fechaPub = datetime.strptime(
+            fechaPub = datetime.datetime.strptime(
                 aux_1[1]+'/'+meses[aux_1[0]]+'/'+aux_1[2], "%d/%m/%Y"
             )
             # print(fechaPub)
