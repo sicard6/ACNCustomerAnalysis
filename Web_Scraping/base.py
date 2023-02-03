@@ -277,7 +277,8 @@ def obtener_articulos_eltiempo(driver: sel.webdriver.Edge, url: str, titulares, 
                               'Tema': tema,
                               'URL': url,
                               'Resumen': resumen,
-                              'Empresa': empresa})
+                              'Empresa': empresa,
+                              'Fuente': 'El Tiempo'})
 
 
 def obtener_articulos_eltiempo_dataframe(driver: sel.webdriver.Edge, url: str, titulares, empresa):

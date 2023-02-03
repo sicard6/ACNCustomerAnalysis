@@ -95,8 +95,6 @@ for tit in titulares:
 
     # agregar contenido al dict de titulares
     tit['Contenido'] = contenido
-    tit['Fuente'] = 'El Tiempo'
-    tit['Empresa'] = sys.argv[1]
     driver.delete_all_cookies()  # clear all cookies in scope of session
 
     # agregar lista de URLs de noticias relacionadas
