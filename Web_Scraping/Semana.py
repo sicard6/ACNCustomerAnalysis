@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 import selenium as sel
 import pandas as pd
 import time
-import datetime
+from datetime import datetime
 import sys
 
 import base as bs
@@ -15,6 +15,17 @@ from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+# %%
+meses = {"ene": "1", "feb": "2", "mar": "3", "abr": "4", "may": "5", "jun": "6", "jul": "7",
+         "ago": "8", "sep": "9", "oct": "10", "nov": "11", "dic": "12"}
+
+
+def convert_fecha(fecha: str):
+    aux_1 = fecha.split(",")[1].split()
+    aux_1[1] = meses[aux_1[1]]
+    return datetime.strptime(aux_1[0]+"/"+aux_1[1]+"/"+aux_1[2], "%d/%m/%Y")
+
 
 # %%
 # Empresa con la cual vamos a extraer los articulos
@@ -37,8 +48,8 @@ titulares = []
 for art in articulos:
     url = art.find_element(By.XPATH, './/a').get_attribute('href')
     if not (bs.existedb(url, "database")):
-        fechaP = art.find_element(
-            By.XPATH, './/div[contains(@style,"margin-bottom:0px;color:#555;font-size:12px;")]').text
+        fechaP = convert_fecha(art.find_element(
+            By.XPATH, './/div[contains(@style,"margin-bottom:0px;color:#555;font-size:12px;")]').text)
         resumen = art.find_element(
             By.XPATH, './/div[contains(@class,"queryly_item_description")]').text
         titulo = art.find_element(
@@ -47,7 +58,7 @@ for art in articulos:
             By.XPATH, './/div[contains(@class,"queryly_advanced_item_imagecontainer")]').get_attribute('style')
         imagen = 'https://www.semana.com'
         imagen = imagen + txtImage.split("\"")[1]
-        titulares.append({'Fecha Extraccion': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        titulares.append({'Fecha Extraccion': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                           'Titulo': titulo,
                           'Fecha Publicacion': fechaP,
                           'Resumen': resumen,
@@ -72,7 +83,7 @@ for art in articulos:
             By.XPATH, './/div[contains(@class,"queryly_advanced_item_imagecontainer")]').get_attribute('style')
         imagen = 'https://www.semana.com'
         imagen = imagen + txtImage.split("\"")[1]
-        titulares.append({'Fecha Extraccion': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        titulares.append({'Fecha Extraccion': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                           'Titulo': titulo,
                           'Fecha Publicacion': fechaP,
                           'Resumen': resumen,

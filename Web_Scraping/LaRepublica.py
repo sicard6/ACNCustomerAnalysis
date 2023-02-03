@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 import selenium as sel
 import pandas as pd
 import time
-import datetime
+from datetime import datetime
 import base as bs
 import sys
 
@@ -29,10 +29,11 @@ princip = driver.find_element(
 urlPrinc = princip.find_elements(By.XPATH, './/a')[1].get_attribute('href')
 if not (bs.existedb(urlPrinc, "database")):  # Si no existe (elimine el .csv)
     temaPrinc = princip.find_elements(By.XPATH, './/a')[1].text
-    fechaPrinc = princip.find_element(By.XPATH, './/span').text
+    fechaPrinc = datetime.strptime(princip.find_element(
+        By.XPATH, './/span').text,  "%d/%m/%Y")
     tituloPrinc = princip.find_elements(By.XPATH, './/a')[2].text
     imagenPrinc = princip.find_element(By.XPATH, './/img').get_attribute('src')
-    titulares.append({'Fecha Extraccion': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    titulares.append({'Fecha Extraccion': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                       'Titulo': tituloPrinc,
                       'Fecha Publicacion': fechaPrinc,
                       'Tema': temaPrinc,
@@ -55,13 +56,13 @@ articulos = driver.find_elements(
 for art in articulos:
     url = art.find_elements(By.XPATH, './/a')[1].get_attribute('href')
     if not (bs.existedb(url, "database")):  # Agregar la fuente para que corra la función .existedb
-        fechaP = art.find_element(
-            By.XPATH, './/span[@class = "date-news"]').text
+        fechaP = datetime.strptime(art.find_element(
+            By.XPATH, './/span[@class = "date-news"]').text,  "%d/%m/%Y")
         tema = art.find_elements(By.XPATH, './/a')[1].text
         resumen = art.find_element(By.XPATH, './/p').text
         titulo = art.find_element(By.XPATH, './/h2').text
         imagen = art.find_elements(By.XPATH, './/img')[0].get_attribute('src')
-        titulares.append({'Fecha Extraccion': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        titulares.append({'Fecha Extraccion': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                           'Titulo': titulo,
                           'Fecha Publicacion': fechaP,
                           'Tema': tema,
