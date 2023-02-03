@@ -36,7 +36,7 @@ articulos = driver.find_elements(
 titulares = []
 for art in articulos:
     url = art.find_element(By.XPATH, './/a').get_attribute('href')
-    if not (bs.existedb(url, "semana")):
+    if not (bs.existedb(url, "database")):
         fechaP = art.find_element(
             By.XPATH, './/div[contains(@style,"margin-bottom:0px;color:#555;font-size:12px;")]').text
         resumen = art.find_element(
