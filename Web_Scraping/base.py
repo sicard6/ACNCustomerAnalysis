@@ -248,6 +248,8 @@ def obtener_articulos_eltiempo(driver: sel.webdriver.Edge, url: str, titulares, 
         titulares (_type_): _description_
         empresa: es la empresa a la que se está buscando
     """
+    meses = {'ENERO': '1', 'FEBRERO': '2', 'MARZO': '3', 'ABRIL': '4', 'MAYO': '5', 'JUNIO': '6', 'JULIO': '7',
+             'AGOSTO': '8', 'SEPTIEMBRE': '9', 'OCTUBRE': '10', 'NOVIEMBRE': '11', 'DICIEMBRE': '12'}
     driver.get(url)
     driver.implicitly_wait(10)
     buscar = driver.find_element(
@@ -266,8 +268,13 @@ def obtener_articulos_eltiempo(driver: sel.webdriver.Edge, url: str, titulares, 
             resumen = articulos.find_element(
                 By.CLASS_NAME, "epigraph-container").text
             # print(resumen)
-            fechaPub = articulos.find_element(
+            aux = articulos.find_element(
                 By.CLASS_NAME, "published-at").text
+            aux_1 = aux.split()
+            aux_1.remove('DE')
+            fechaPub = datetime.strptime(
+                aux_1[1]+'/'+meses[aux_1[0]]+'/'+aux_1[2], "%d/%m/%Y"
+            )
             # print(fechaPub)
             tema = articulos.find_element(By.CLASS_NAME, "category").text
             # print(tema)
