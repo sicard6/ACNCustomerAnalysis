@@ -159,14 +159,13 @@ df_curated = pd.read_csv(
 df = df_raw[~df_raw['Titulo'].isin(df_curated['Titulo'])]
 
 if len(df) > 0:
-    # CREACIÓN COLUMNAS DE TIEMPO
-    df['Dia Publicacion'] = pd.DatetimeIndex(df['Fecha Publicacion']).day
-    df['Mes Publicacion'] = pd.DatetimeIndex(df['Fecha Publicacion']).month
-    df['Año Publicacion'] = pd.DatetimeIndex(df['Fecha Publicacion']).year
+    # Estandarización formato fechas
+    df['Fecha Publicacion'] = pd.to_datetime(
+        df['Fecha Publicacion']).dt.strftime('%d-%m-%Y')
+    df['Fecha Extraccion'] = pd.to_datetime(
+        df['Fecha Extraccion']).dt.strftime('%d-%m-%Y')
 
     # ELIMINACIÓN COLUMNAS Y FILAS NO RELEVANTES
-    # Eliminar Fecha de publicación (crear a conveniencia)
-    df = df.drop(['Fecha Publicacion'], axis=1)
     # Eliminar filas sin información en la columna Contenido
     df = df.drop(df[df['Contenido'] == "SIN PARRAFOS"].index).reset_index(
         drop=True)
