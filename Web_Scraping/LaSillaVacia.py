@@ -151,7 +151,7 @@ def get_contenido(driver):
             contenido = ' '.join(list(map(lambda x: x.text, parrafos)))
         except:
             contenido = None
-    return contenido
+    return contenido.rsplit('El periodismo independiente')[0]
 
 
 # %%
