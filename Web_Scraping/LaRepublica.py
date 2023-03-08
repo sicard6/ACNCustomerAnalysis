@@ -8,9 +8,6 @@ import base as bs
 import sys
 
 import os as os
-import csv
-import json
-
 # %%
 # Empresa con la cual vamos a extraer los articulos
 empresa = str.lower(sys.argv[1])  # input("Digite la empresa a extraer: ")

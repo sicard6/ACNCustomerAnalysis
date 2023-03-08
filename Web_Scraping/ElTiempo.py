@@ -5,14 +5,10 @@
 import selenium as sel
 from selenium.webdriver.common.by import By
 import pandas as pd
-import time
-from datetime import datetime
 import base as bs
-
-import json
-import os as os
 import sys
 
+import os as os
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
@@ -27,7 +23,7 @@ from selenium.webdriver.support import expected_conditions as EC
 # %%
 # Empresa con la cual vamos a extraer los articulos
 # str.lower(sys.argv[1])  # input("Digite la empresa a extraer: ")
-empresa = 'ecopetrol'
+empresa = str.lower(sys.argv[2])
 paginas = 5  # input("la cantidad de paginas ")
 
 # %%
