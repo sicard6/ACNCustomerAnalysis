@@ -7,12 +7,6 @@ import base as bs
 
 import os as os
 import sys
-
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-
-
 # %%
 meses = {"Enero": "1", "Febrero": "2", "Marzo": "3", "Abril": "4", "Mayo": "5", "Junio": "6", "Julio": "7",
          "Agosto": "8", "Septiembre": "9", "Octubre": "10", "Noviembre": "11", "Diciembre": "12"}
@@ -151,7 +145,7 @@ def get_contenido(driver):
             contenido = ' '.join(list(map(lambda x: x.text, parrafos)))
         except:
             contenido = None
-    return contenido
+    return contenido.rsplit('El periodismo independiente')[0]
 
 
 # %%
