@@ -171,18 +171,17 @@ def conteo_ngramas(columna: str, n: int, df_: pd.DataFrame):
 
 # %% LECTURA Y PREPARACIÓN DE LOS DATOS
 # LEER ARCHIVOS CON DATOS
-df = pd.read_csv('./data/raw/database.csv',
-                 encoding='utf-8-sig', index_col=[0])
-
-print(df.head())
-# df_curated = pd.read_csv(
-#     '/data/curated/curated_database.csv', encoding='latin', index_col=[0])
-# # Verificar cuales articulos no han sido procesados
-# df = df_raw[~df_raw['Titulo'].isin(df_curated['Titulo'])]
+df_raw = pd.read_csv('./data/raw/database.csv',
+                     encoding='utf-8-sig', index_col=[0])
+df_curated = pd.read_csv(
+    '/data/curated/curated_database.csv', encoding='latin', index_col=[0])
+# Verificar cuales articulos no han sido procesados
+df = df_raw[~df_raw['Titulo'].isin(df_curated['Titulo'])]
 
 # %%
 if len(df) > 0:
     # Estandarización formato fechas
+    df['Contenido'] = df['Contenido'].str.replace('\r|\n|\f|\v', ' ')
     df['Fecha Publicacion'] = pd.to_datetime(
         df['Fecha Publicacion']).dt.strftime('%d-%m-%Y')
     df['Fecha Extraccion'] = pd.to_datetime(
@@ -194,24 +193,17 @@ if len(df) > 0:
         drop=True)
     df = df.drop(df[df['Contenido'].isna()].index).reset_index(drop=True)
 
-#   df = pd.concat([df, df_curated], ignore_index=True)
+    df = pd.concat([df, df_curated], ignore_index=True)
     df.to_csv(f'./data/curated/curated_database.csv')
 
 # %%
 df_contenido = procesamiento('Contenido', df)
-print(df_contenido.head())
 df_palabras = conteo_ngramas('Contenido', 1, df_contenido)
 df_bigramas = conteo_ngramas('Contenido', 2, df_contenido)
 df_trigramas = conteo_ngramas('Contenido', 3, df_contenido)
 
-print(df_contenido[10:14])
-
-# df_contenido["Contenido"].str.replace("\n",' ',regex=True)
-# df_contenido['Contenido'] =df_contenido["Contenido"].str.strip()
-df_contenido['Contenido'] = df_contenido['Contenido'].str.replace('\r|\n|\f|\v',' ')
-df_contenido['Contenido segmentado'] = df_contenido['Contenido segmentado'].str.replace('\r|\n|\f|\v',' ')
-
-df_contenido.to_csv('./data/curated/contenido_procesado.csv', encoding='utf-8-sig')
+df_contenido.to_csv(
+    './data/curated/contenido_procesado.csv', encoding='utf-8-sig')
 df_palabras.to_csv('./data/curated/palabras.csv', encoding='utf-8-sig')
 df_bigramas.to_csv('./data/curated/bigramas.csv', encoding='utf-8-sig')
 df_trigramas.to_csv('./data/curated/trigramas.csv', encoding='utf-8-sig')
