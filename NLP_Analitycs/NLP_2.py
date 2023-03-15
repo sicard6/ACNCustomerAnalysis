@@ -88,9 +88,9 @@ def lista_ngramas(val_ent: str, val_pal: str, indice: int, n: int):
         lista = []
         for key, value in freq_pal.items():
             if key in entidades:
-                lista.append([key, value, indice, 1])
+                lista.append([", ".join(list(key)), value, indice, 1])
             else:
-                lista.append([key, value, indice, 0])
+                lista.append([", ".join(list(key)), value, indice, 0])
         df_frec = pd.DataFrame(
             lista, columns=['Palabra', 'Frecuencia', 'ID_Articulo', 'Entidad'])
     else:
