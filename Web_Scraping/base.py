@@ -28,7 +28,7 @@ def existedb(url: str, fuente: str):
         Bool: False si la url no existe o no encuentra la base de datos, True si no existe
     """
     try:
-        db = pd.read_csv(f"./data/raw/{fuente}.csv", encoding='latin-1')
+        db = pd.read_csv(f"./data/raw/{fuente}.csv", encoding='utf-8-sig')
     except FileNotFoundError:
         return False
     else:

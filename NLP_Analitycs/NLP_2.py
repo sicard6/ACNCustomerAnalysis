@@ -22,151 +22,85 @@ def procesamiento(columna: str, df: pd.DataFrame):
     # spacy.cli.download('es_core_news_md')
     es = spacy.load('es_core_news_md')
 
-    df_aux = pd.DataFrame()
-    # Caracteres a minúscula
-    df_aux[columna] = df[columna].str.lower()
-
     # Convertir a objeto spaCy
-    aux = df[columna].apply(es)
+    aux = df[columna].str.lower().apply(es)
 
     # Tokenización
-    df_aux[f'{columna} procesado'] = aux.apply(
+    df[f'{columna} procesado'] = aux.apply(
         lambda x: [token for token in x])
     # Normalización (minuscula, tamaño > 3 y solo letras)
-    df_aux[f'{columna} procesado'] = df_aux[f'{columna} procesado'].apply(
+    df[f'{columna} procesado'] = df[f'{columna} procesado'].apply(
         lambda x: [token for token in x if len(token) > 3 and token.is_alpha])
     # Remover stopwords (combinación de contexto y spacy).
     # Convertir Token a str
     with open('./NLP_Analitycs/sw_es.txt', 'r', encoding='utf-8') as file:
         stop_words_contexto = {line.split(None, 1)[0] for line in file}
     es.Defaults.stop_words |= stop_words_contexto
-    df_aux[f'{columna} procesado'] = df_aux[f'{columna} procesado'].apply(
+    df[f'{columna} procesado'] = df[f'{columna} procesado'].apply(
         lambda x: [token for token in x if not token.is_stop])
 
     # Segmentación en oraciones
-    df_aux[f'{columna} segmentado'] = aux.apply(
-        lambda x: [segment for segment in x.sents])
+    df[f'{columna} segmentado'] = aux.apply(
+        lambda x: ", ".join([segment.orth_ for segment in x.sents]))
 
-    return df_aux
+    # Extracción de entidades
+    df[f'Entidades de {columna}'] = aux.apply(
+        lambda x: ", ".join([ent.text for ent in x.ents]))
 
-
-def stemming(columna: str, df: pd.DataFrame):
-    """Función para radicalizar las palabras (eliminación de plurales)
-
-    Args:
-        columna (str): columna a procesar
-        df (pd.DataFrame): dataframe en donde se encuentra el texto a procesar
-    """
-
-    if f'{columna} procesado' not in df.columns:
-        procesamiento(columna, df)
-
+    # Radicalización (stemming)
     stemmer = nltk.SnowballStemmer('spanish')
     df[f'{columna} radicalizado'] = df[f'{columna} procesado'].apply(
-        lambda x: [stemmer.stem(token.orth_) for token in x])
+        lambda x: ", ".join([stemmer.stem(token.orth_) for token in x]))
 
-
-def lemmatization(columna: str, df: pd.DataFrame):
-    """Función para lematiizar las palabras (llevar a la raíz)
-
-    Args:
-        columna (str): columna a procesar
-        df (pd.DataFrame): dataframe en donde se encuentra el texto a procesar
-    """
-
-    if f'{columna} procesado' not in df.columns:
-        procesamiento(columna, df)
-
-    df[f'{columna} lemmatizado'] = df[f'{columna} procesado'].apply(
+    # Lemmatization
+    df[f'{columna} lematizado'] = df[f'{columna} procesado'].apply(
         lambda x: {token.orth_: token.lemma_ for token in x})
 
-
-def palabras_mas_comunes(empresa: str, columna: str, num: int, df: pd.DataFrame):
-    """Función para obtener las frecuencias de las palabras mas repetidas en una 
-    empresa
-
-    Args:
-        empresa (str): cliente a analizar
-        columna (str): nombre de la columna de la que se obtendrán las palabras 
-        más comunes
-        num (int): top de palabras más comunes
-        df (pd.DataFrame): data frame con la información
-    """
-    if f'{columna} procesado' not in df.columns:
-        procesamiento(columna, df)
-
-    df_ = df[df['Empresa'] == empresa]
-
-    palabras = [str(token) for tokenlist in df_[
-        f'{columna} procesado'].values for token in tokenlist]
-
-    frecuencia = nltk.FreqDist(palabras)
-    return frecuencia.most_common(num)
+    # Procesado a string
+    df[f'{columna} procesado'] = df[f'{columna} procesado'].apply(
+        lambda x: ", ".join([token.orth_ for token in x]))
 
 
-def ngramas_mas_comunes(empresa: str, columna: str, num: int, df: pd.DataFrame, n: int):
-    """Función para obtener las frecuencias de los ngramas mas repetidos en una 
-    empresa
+def lista_ngramas(val_ent: str, val_pal: str, indice: int, n: int):
+    """Función que genera la lista de todas las palabras del conjunto
+    de datos y obtiene la frecuencia de cada una por artículo, 
+    especifica a que artículo pertenece y si es una entidad (1) o no
+    (0).
 
     Args:
-        empresa (str): cliente a analizar
-        columna (str): nombre de la columna de la que se obtendrán las palabras 
-        más comunes
-        num (int): top de palabras más comunes
-        df (pd.DataFrame): data frame con la información
-        n (int): tamaño de la subsecuencia
+        val_ent (str): cadena de entidades obtenida en el procesamiento
+        val_pal (str): cadena de palabras obtenida en el procesamiento
+        indice (int): indice del artículo al que corresponden las cadenas
+        n (int): tamaño de la subsecuencia del n-grama
+
+    Returns:
+        pd.DataFrame: DataFrame con el indice, la palabra, frecuencia de
+        aparición, ID del artículo al que pertenece. Si es solo una palabra
+        se incluye la columna de entidad que indica si lo es o no
     """
-    if f'{columna} procesado' not in df.columns:
-        procesamiento(columna, df)
+    entidades = set(val_ent.split(', '))
 
-    df_ = df[df['Empresa'] == empresa]
-
-    palabras = [str(token) for tokenlist in df_[
-        f'{columna} procesado'].values for token in tokenlist]
-
+    palabras = val_pal.split(', ')
     ngrams = list(nltk.ngrams(palabras, n))
-    frecuencia = nltk.FreqDist(ngrams)
+    freq_pal = dict(nltk.FreqDist(ngrams))
 
-    return frecuencia.most_common(num)
+    if n == 1:
+        lista = []
+        for key, value in freq_pal.items():
+            if key in entidades:
+                lista.append([key, value, indice, 1])
+            else:
+                lista.append([key, value, indice, 0])
+        df_frec = pd.DataFrame(
+            lista, columns=['Palabra', 'Frecuencia', 'ID_Articulo', 'Entidad'])
+    else:
+        lista = []
+        for key, value in freq_pal.items():
+            lista.append([", ".join(list(key)), value, indice])
+        df_frec = pd.DataFrame(
+            lista, columns=['Palabra', 'Frecuencia', 'ID_Articulo'])
 
-
-def entidades_mas_comunes(empresa: str, columna: str, num: int, df: pd.DataFrame, n: int):
-    """Función para obtener las frecuencias de las entidades mas repetidos en una 
-    empresa
-
-    Args:
-        empresa (str): cliente a analizar
-        columna (str): nombre de la columna de la que se obtendrán las palabras 
-        más comunes
-        num (int): top de palabras más comunes
-        df (pd.DataFrame): data frame con la información
-        n (int): tamaño de la subsecuencia
-    """
-    spacy.cli.download('es_core_news_md')
-    es = spacy.load('es_core_news_md')
-
-    df_ = df[df['Empresa'] == empresa]
-
-    # Caracteres a minúscula
-    texto = " ".join([cont for cont in df_[columna]])
-    # Tokenización
-    entidades = {ent.text for ent in es(texto).ents}
-    frecuencia = nltk.FreqDist(entidades)
-    return frecuencia.most_common(num)
-
-
-def conteo_ngramas(columna: str, n: int, df_: pd.DataFrame):
-    if f'{columna} procesado' not in df_.columns:
-        df_ = procesamiento(columna, df)
-
-    palabras = [str(token) for tokenlist in df_[
-        f'{columna} procesado'].values for token in tokenlist]
-    ngrams = list(nltk.ngrams(palabras, n))
-    frecuencia = nltk.FreqDist(ngrams)
-    llaves = [list(i) for i in frecuencia.keys()]
-    valores = frecuencia.values()
-
-    return pd.DataFrame({'Palabras': llaves, 'Frecuecia': valores})
+    return df_frec
 
 
 # %% LECTURA Y PREPARACIÓN DE LOS DATOS
@@ -174,10 +108,10 @@ def conteo_ngramas(columna: str, n: int, df_: pd.DataFrame):
 df_raw = pd.read_csv('./data/raw/database.csv',
                      encoding='utf-8-sig', index_col=[0])
 df_curated = pd.read_csv(
-    '/data/curated/curated_database.csv', encoding='latin', index_col=[0])
+    './data/curated/curated_database.csv', encoding='utf-8-sig', index_col=[0])
+
 # Verificar cuales articulos no han sido procesados
 df = df_raw[~df_raw['Titulo'].isin(df_curated['Titulo'])]
-
 # %%
 if len(df) > 0:
     # Estandarización formato fechas
@@ -192,22 +126,44 @@ if len(df) > 0:
     df = df.drop(df[df['Contenido'] == "SIN PARRAFOS"].index).reset_index(
         drop=True)
     df = df.drop(df[df['Contenido'].isna()].index).reset_index(drop=True)
-
-    df = pd.concat([df, df_curated], ignore_index=True)
-    df.to_csv(f'./data/curated/curated_database.csv')
-
+    df = df.drop(df[df.Contenido.str.len() < 30].index).reset_index(drop=True)
 # %%
-df_contenido = procesamiento('Contenido', df)
-df_palabras = conteo_ngramas('Contenido', 1, df_contenido)
-df_bigramas = conteo_ngramas('Contenido', 2, df_contenido)
-df_trigramas = conteo_ngramas('Contenido', 3, df_contenido)
+procesamiento('Contenido', df)
+df_palabras = pd.DataFrame()
+df_bigramas = pd.DataFrame()
+df_trigramas = pd.DataFrame()
 
-df_contenido.to_csv(
-    './data/curated/contenido_procesado.csv', encoding='utf-8-sig')
+len_df = len(df)
+len_curated = len(df_curated)
+
+for i in range(len_curated, len_curated + len_df):
+    aux_palabras = lista_ngramas(df.loc[i - len_curated, 'Entidades de Contenido'],
+                                 df.loc[i - len_curated, 'Contenido procesado'], i, 1)
+    df_palabras = pd.concat([df_palabras, aux_palabras], ignore_index=True)
+
+    aux_bigramas = lista_ngramas(df.loc[i - len_curated, 'Entidades de Contenido'],
+                                 df.loc[i - len_curated, 'Contenido procesado'], i, 2)
+    df_bigramas = pd.concat([df_bigramas, aux_bigramas], ignore_index=True)
+
+    aux_trigramas = lista_ngramas(df.loc[i - len_curated, 'Entidades de Contenido'],
+                                  df.loc[i - len_curated, 'Contenido procesado'], i, 3)
+    df_trigramas = pd.concat([df_trigramas, aux_trigramas], ignore_index=True)
+
+df_curated = pd.concat([df_curated, df], ignore_index=True)
+df_curated.to_csv('./data/curated/curated_database.csv', encoding='utf-8-sig')
+
+palabras_csv = pd.read_csv(
+    './data/curated/palabras.csv', encoding='utf-8-sig', index_col=[0])
+df_palabras = pd.concat([palabras_csv, df_palabras], ignore_index=True)
 df_palabras.to_csv('./data/curated/palabras.csv', encoding='utf-8-sig')
+
+bigramas_csv = pd.read_csv(
+    './data/curated/bigramas.csv', encoding='utf-8-sig', index_col=[0])
+df_bigramas = pd.concat([bigramas_csv, df_bigramas], ignore_index=True)
 df_bigramas.to_csv('./data/curated/bigramas.csv', encoding='utf-8-sig')
+
+trigramas_csv = pd.read_csv(
+    './data/curated/trigramas.csv', encoding='utf-8-sig', index_col=[0])
+df_trigramas = pd.concat([trigramas_csv, df_trigramas], ignore_index=True)
 df_trigramas.to_csv('./data/curated/trigramas.csv', encoding='utf-8-sig')
-# print(palabras_mas_comunes('ecopetrol', 'Contenido', 10, df))
-# print(ngramas_mas_comunes('ecopetrol', 'Contenido', 10, df, 2))
-# print(ngramas_mas_comunes('ecopetrol', 'Contenido', 10, df, 3))
 # %%
