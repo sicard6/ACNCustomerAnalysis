@@ -78,8 +78,10 @@ def lista_ngramas(val_ent: str, val_pal: str, indice: int, n: int):
         aparición, ID del artículo al que pertenece. Si es solo una palabra
         se incluye la columna de entidad que indica si lo es o no
     """
-    entidades = set(val_ent.split(', '))
-
+    if type(val_ent) == float:
+        entidades = {}
+    else:
+        entidades = set(val_ent.split(', '))
     palabras = val_pal.split(', ')
     ngrams = list(nltk.ngrams(palabras, n))
     freq_pal = dict(nltk.FreqDist(ngrams))
@@ -87,10 +89,11 @@ def lista_ngramas(val_ent: str, val_pal: str, indice: int, n: int):
     if n == 1:
         lista = []
         for key, value in freq_pal.items():
-            if key in entidades:
-                lista.append([key, value, indice, 1])
+            word = ", ".join(list(key))
+            if word in entidades:
+                lista.append([word, value, indice, 1])
             else:
-                lista.append([key, value, indice, 0])
+                lista.append([word, value, indice, 0])
         df_frec = pd.DataFrame(
             lista, columns=['Palabra', 'Frecuencia', 'ID_Articulo', 'Entidad'])
     else:
