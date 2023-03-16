@@ -35,6 +35,8 @@ driver = sel.webdriver.Edge()
 driver.get(f'https://www.semana.com/buscador/?query={empresa}')
 driver.implicitly_wait(10)  # Nueva metodología de wait
 
+driver.delete_all_cookies()
+
 # %%
 # Extrae la lista de todos los articulos de la pagina
 articulos = driver.find_elements(
@@ -107,6 +109,8 @@ for tit in titulares:
 
     # agregar contenido al dict de titulares
     tit['Tema'] = bs.obtener_tema(driver)
+
+    driver.delete_all_cookies()
 
 # %%
 df = pd.DataFrame(titulares)

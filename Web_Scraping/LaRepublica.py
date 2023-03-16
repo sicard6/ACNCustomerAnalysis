@@ -19,6 +19,8 @@ driver = sel.webdriver.Edge()
 driver.get(f'https://www.larepublica.co/buscar?term={empresa}')
 driver.implicitly_wait(10)  # Nueva metodología de wait
 
+driver.delete_all_cookies()
+
 # %%
 # sacar primer titular CON BASE DE DATOS INICIAL
 titulares = []
@@ -95,6 +97,8 @@ for tit in titulares:
 
     # agregar lista de URLs de noticias relacionadas
     tit['RelNewsUrls'] = bs.obtener_articulos_relacionados(driver)
+
+    driver.delete_all_cookies()
 
     # se podria agregar un if resumen vacio, llamar a resumen. (para las 3 noticias principales)
 

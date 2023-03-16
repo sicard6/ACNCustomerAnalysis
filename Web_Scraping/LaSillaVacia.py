@@ -161,6 +161,8 @@ revista = "laSillaVacia"
 driver = sel.webdriver.Edge()
 driver.get(f'https://www.lasillavacia.com/buscar?q={empresa}&cat=all')
 
+driver.delete_all_cookies()
+
 i = 1
 try:
     while i < 2:
@@ -199,6 +201,8 @@ for tit in titulares:
     # tit["Resumen"] = get_resumen(driver)
     tit["Fuente"] = "La Silla Vacía"
     tit["Contenido"] = get_contenido(driver)
+
+    driver.delete_all_cookies()
 
 # %%
 df = pd.DataFrame(titulares)

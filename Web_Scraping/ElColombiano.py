@@ -90,6 +90,8 @@ driver.get(
     f'https://www.elcolombiano.com/busqueda/-/search/{empresa_}/false/false/19810311/20230311/date/true/true/0/0/meta/0/0/0/1')
 driver.implicitly_wait(10)
 
+driver.delete_all_cookies()
+
 # input_element = driver.find_element(By.XPATH, ".//input[@class='iter-field-input iter-field-input-text']")
 # time.sleep(2)
 # input_element.send_keys(empresa)
@@ -146,6 +148,8 @@ for tit in titulares:
     driver.implicitly_wait(10)
     tit["Contenido"] = get_contenido(driver)
     tit["Resumen"] = get_resumen(driver)
+
+    driver.delete_all_cookies()
 
 # %%
 df = pd.DataFrame(titulares)
