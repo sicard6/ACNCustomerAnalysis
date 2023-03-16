@@ -27,7 +27,8 @@ def convert_fecha(fecha: str):
 # %%
 # Empresa con la cual vamos a extraer los articulos
 empresa = str.lower(sys.argv[1])  # input("Digite la empresa a extraer: ")
-
+if " " in empresa:
+    empresa = empresa.strip().replace(" ", "%20")
 # %%
 # cerar driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
 driver = sel.webdriver.Edge()

@@ -152,6 +152,8 @@ def get_contenido(driver):
 # Empresa con la cual vamos a extraer los articulos
 # input("Digite la empresa a extraer: ").lower()
 empresa = str.lower(sys.argv[1])
+if " " in empresa:
+    empresa = empresa.strip().replace(" ", "%20")
 revista = "laSillaVacia"
 
 # %%

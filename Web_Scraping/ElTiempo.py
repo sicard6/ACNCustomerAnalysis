@@ -24,6 +24,8 @@ from selenium.webdriver.support import expected_conditions as EC
 # Empresa con la cual vamos a extraer los articulos
 # str.lower(sys.argv[1])  # input("Digite la empresa a extraer: ")
 empresa = str.lower(sys.argv[1])
+if " " in empresa:
+    empresa = empresa.strip().replace(" ", "%20")
 paginas = 5  # input("la cantidad de paginas ")
 
 # %%
