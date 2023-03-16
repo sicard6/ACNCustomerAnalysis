@@ -152,8 +152,8 @@ def get_contenido(driver):
 # Empresa con la cual vamos a extraer los articulos
 # input("Digite la empresa a extraer: ").lower()
 empresa = str.lower(sys.argv[1])
-if " " in empresa:
-    empresa = empresa.strip().replace(" ", "%20")
+if "_" in empresa:
+    empresa = empresa.strip().replace("_", "+")
 revista = "laSillaVacia"
 
 # %%
@@ -202,6 +202,7 @@ for tit in titulares:
 
 # %%
 df = pd.DataFrame(titulares)
+df['Empresa'] = df['Empresa'].str.replace('+',' ')
 bs.writeData("database", df)
 
 # %%

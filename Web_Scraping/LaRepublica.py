@@ -11,13 +11,13 @@ import os as os
 # %%
 # Empresa con la cual vamos a extraer los articulos
 empresa = str.lower(sys.argv[1])  # input("Digite la empresa a extraer: ")
-if " " in empresa:
-    empresa = empresa.strip().replace(" ", "%20")
+if "_" in empresa:
+    empresa = empresa.strip().replace("_", "+")
 # %%
 # cerar driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
 driver = sel.webdriver.Edge()
-driver.get(f'https://www.larepublica.co/{empresa}')
-time.sleep(2)
+driver.get(f'https://www.larepublica.co/buscar?term={empresa}')
+driver.implicitly_wait(10)  # Nueva metodología de wait
 
 # %%
 # sacar primer titular CON BASE DE DATOS INICIAL
@@ -74,6 +74,7 @@ for art in articulos:
 # %%
 # se carga la info del primer titular
 driver.get(titulares[0]['URL'])
+driver.implicitly_wait(10)  # Nueva metodología de wait
 
 # agregar resumen al dict de titularesPrinc
 titulares[0]['Resumen'] = bs.obtener_resumen(driver)
@@ -84,6 +85,7 @@ titulares[0]['Resumen'] = bs.obtener_resumen(driver)
 for tit in titulares:
 
     driver.get(tit['URL'])
+    driver.implicitly_wait(10)  # Nueva metodología de wait
 
     # agregar autor al dict de titulares
     tit['Autor'] = bs.obtener_autor(driver)
@@ -101,4 +103,5 @@ driver.close()
 
 # %%
 df = pd.DataFrame(titulares)
+df['Empresa'] = df['Empresa'].str.replace('+',' ')
 bs.writeData("database", df)
