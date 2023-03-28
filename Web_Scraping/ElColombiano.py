@@ -10,8 +10,8 @@ import sys
 # %%
 # Empresa con la cual vamos a extraer los articulos
 empresa = str.lower(sys.argv[1])
-if " " in empresa:
-    empresa_ = empresa.replace(" ", "%20")
+if "_" in empresa:
+    empresa_ = empresa.replace("_", "%20")
 else:
     empresa_ = empresa
 
@@ -20,7 +20,9 @@ else:
 driver = sel.webdriver.Edge()
 driver.get(
     f'https://www.elcolombiano.com/busqueda/-/search/{empresa_}/false/false/19810311/20230311/date/true/true/0/0/meta/0/0/0/1')
-# driver.implicitly_wait(10)
+driver.implicitly_wait(10)
+
+driver.delete_all_cookies()
 
 # input_element = driver.find_element(By.XPATH, ".//input[@class='iter-field-input iter-field-input-text']")
 # time.sleep(2)
@@ -38,6 +40,7 @@ for i in tqdm(range(1, int(num_paginas) + 1)):
     aux = str(i)
     url_a_buscar = url_princ+aux
     driver.get(url_a_buscar)
+    driver.implicitly_wait(10)
     articulos = driver.find_elements(
         By.XPATH, './/li[@class="element   full-access norestricted"]')
 
@@ -78,8 +81,11 @@ for tit in titulares:
     tit["Contenido"] = bs.obtener_contenido_col(driver)
     tit["Resumen"] = bs.obtener_resumen_col(driver)
 
+    driver.delete_all_cookies()
+
 # %%
 df = pd.DataFrame(titulares)
+df['Empresa'] = df['Empresa'].str.replace('_',' ')
 bs.writeData("database", df)
 
 # %%

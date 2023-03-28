@@ -24,9 +24,9 @@ from selenium.webdriver.support import expected_conditions as EC
 # Empresa con la cual vamos a extraer los articulos
 # str.lower(sys.argv[1])  # input("Digite la empresa a extraer: ")
 empresa = str.lower(sys.argv[1])
-if " " in empresa:
-    empresa = empresa.strip().replace(" ", "%20")
-paginas = 5  # input("la cantidad de paginas ")
+if "_" in empresa:
+    empresa = empresa.strip().replace("_", "%20")
+paginas = 2  # input("la cantidad de paginas ")
 
 # %%
 # cerar driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
@@ -101,4 +101,5 @@ driver.quit()
 
 # %%
 df = pd.DataFrame(titulares)
+df['Empresa'] = df['Empresa'].str.replace('%20',' ')
 bs.writeData("database", df)

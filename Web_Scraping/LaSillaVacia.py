@@ -152,14 +152,16 @@ def get_contenido(driver):
 # Empresa con la cual vamos a extraer los articulos
 # input("Digite la empresa a extraer: ").lower()
 empresa = str.lower(sys.argv[1])
-if " " in empresa:
-    empresa = empresa.strip().replace(" ", "%20")
+if "_" in empresa:
+    empresa = empresa.strip().replace("_", "+")
 revista = "laSillaVacia"
 
 # %%
 # crear driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
 driver = sel.webdriver.Edge()
 driver.get(f'https://www.lasillavacia.com/buscar?q={empresa}&cat=all')
+
+driver.delete_all_cookies()
 
 i = 1
 try:
@@ -200,8 +202,11 @@ for tit in titulares:
     tit["Fuente"] = "La Silla Vacía"
     tit["Contenido"] = get_contenido(driver)
 
+    driver.delete_all_cookies()
+
 # %%
 df = pd.DataFrame(titulares)
+df['Empresa'] = df['Empresa'].str.replace('+',' ')
 bs.writeData("database", df)
 
 # %%

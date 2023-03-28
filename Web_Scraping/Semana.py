@@ -27,13 +27,15 @@ def convert_fecha(fecha: str):
 # %%
 # Empresa con la cual vamos a extraer los articulos
 empresa = str.lower(sys.argv[1])  # input("Digite la empresa a extraer: ")
-if " " in empresa:
-    empresa = empresa.strip().replace(" ", "%20")
+if "_" in empresa:
+    empresa = empresa.strip().replace("_", "%20")
 # %%
 # cerar driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
 driver = sel.webdriver.Edge()
 driver.get(f'https://www.semana.com/buscador/?query={empresa}')
-time.sleep(2)
+driver.implicitly_wait(10)  # Nueva metodología de wait
+
+driver.delete_all_cookies()
 
 # %%
 # Extrae la lista de todos los articulos de la pagina
@@ -97,6 +99,7 @@ for art in articulos:
 for tit in titulares:
 
     driver.get(tit['URL'])
+    driver.implicitly_wait(10)  # Nueva metodología de wait
 
     # agregar contenido al dict de titulares
     tit['Contenido'] = bs.obtener_contenido(driver)
@@ -107,8 +110,11 @@ for tit in titulares:
     # agregar contenido al dict de titulares
     tit['Tema'] = bs.obtener_tema(driver)
 
+    driver.delete_all_cookies()
+
 # %%
 df = pd.DataFrame(titulares)
+df['Empresa'] = df['Empresa'].str.replace('%20',' ')
 bs.writeData("database", df)
 
 # %%
