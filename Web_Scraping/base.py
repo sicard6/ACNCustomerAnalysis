@@ -1,18 +1,15 @@
 from selenium.webdriver.common.by import By
 import selenium as sel
 import pandas as pd
-import time
+import os as os
 import datetime
 import re
 
-import os as os
-import csv
-
-from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import StaleElementReferenceException
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.by import By
 
 # ---------------------------------------------------------
 # ------------- GLOBAL ------------------------------------
@@ -308,3 +305,140 @@ def obtener_articulos_eltiempo_dataframe(driver: sel.webdriver.Edge, url: str, t
     titulares = titulares + "hola"
 
     empresa = empresa+"hellow"
+
+# ---------------------------------------------------------
+# ------------------ ELCOLOMBIANO -------------------------
+# ---------------------------------------------------------
+
+
+def obtener_imagen_col(driver: sel.webdriver.Edge):
+    """Función para obtener el la url que contiene la imágen principal
+    del artículo
+
+    Args:
+        driver (sel.webdriver.Edge): pagina en la que se buscara el elemento
+
+    Returns:
+        str: string con la url de la imágen
+    """
+    try:
+        imagen = driver.find_element(By.XPATH, './/img').get_attribute('src')
+    except:
+        imagen = None
+    return imagen
+
+
+def obtener_contenido_col(driver: sel.webdriver.Edge):
+    """Función para obtener todos los párrafos que conforman
+    el arículo
+
+    Args:
+        driver (sel.webdriver.Edge): página en la que se hará la búsqueda
+
+    Returns:
+        str: string con todos los párrafos del artículo
+    """
+    # No esta leyendo los artículos class="text"
+    try:
+        contenido = driver.find_elements(
+            By.XPATH, './/div[@class="block-text"]//p')
+    except:
+        try:
+            contenido = driver.find_elements(
+                By.XPATH, './/div[@class="text"]//p')
+        except:
+            contenido = []
+
+    return " ".join([parrafo.text for parrafo in contenido])
+
+
+def obtener_resumen_col(driver: sel.webdriver.Edge):
+    """Función para obtener el resumen del artículo
+
+    Args:
+        driver (sel.webdriver.Edge): página en la que se hará la búsqueda
+
+    Returns:
+        str: cadena con el resumen del artículo 
+    """
+    try:
+        resumen = driver.find_element(
+            By.XPATH, './/div[@class="block-headline"]//h2').text
+    except:
+        resumen = None
+
+    return resumen
+
+# ---------------------------------------------------------
+# ------------------- PORTAFOLIO --------------------------
+# ---------------------------------------------------------
+
+
+def obtener_fecha_port(driver: sel.webdriver.Edge):
+    """Función para obtener la fecha de publicación del artículo
+
+    Args:
+        driver (sel.webdriver.Edge): pagina en la que se buscara el elemento
+
+    Returns:
+        date.date: fecha de publicación en formato dd/mm/YYYY
+    """
+    meses = {'Ene': '1', 'Feb': '2', 'Mar': '3', 'Abr': '4', 'May': '5', 'Jun': '6',
+             'Jul': '7', 'Ago': '8', 'Sep': '9', 'Oct': '10', 'Nov': '11', 'Dic': '12'}
+    fecha_texto = driver.find_element(By.XPATH, './/div[@class="time"]').text
+    fecha_lista = fecha_texto.rsplit('- ')[1].split()[:4]
+    del fecha_lista[2]
+    fecha = datetime.datetime.strptime(
+        fecha_lista[1]+'/'+meses[fecha_lista[0][:-1]]+'/'+fecha_lista[2], '%d/%m/%Y')
+
+    return fecha
+
+
+def obtener_imagen_port(driver: sel.webdriver.Edge):
+    """Función para obtener el la url que contiene la imágen principal
+    del artículo
+
+    Args:
+        driver (sel.webdriver.Edge): pagina en la que se buscara el elemento
+
+    Returns:
+        str: string con la url de la imágen
+    """
+    try:
+        imagen = driver.find_element(By.XPATH, './/img').get_attribute('src')
+    except:
+        imagen = None
+    return imagen
+
+
+def obtener_autor_contenido_relsnews(driver: sel.webdriver.Edge):
+    """Función para obtener todos los párrafos que conforman
+    el arículo
+
+    Args:
+        driver (sel.webdriver.Edge): página en la que se hará la búsqueda
+
+    Returns:
+        str: string con todos los párrafos del artículo
+    """
+    try:
+        contenido = driver.find_elements(
+            By.XPATH, './/div[@class="article-content"]//p')
+    except:
+        contenido = []
+
+    rel_news = driver.find_elements(
+        By.XPATH, './/div[@class="article-content"]//p//a')
+    contenido = driver.find_elements(
+        By.XPATH, './/div[@class="article-content"]//p')
+    autor = re.split('[^a-zA-Z ]', contenido[-1].text)[0]
+    contenido = [parrafo.text for parrafo in contenido[:-1]]
+
+    for noticia in rel_news:
+        if noticia.text in contenido:
+            contenido.remove(noticia.text)
+
+    rel_news_url = ", ".join([news.get_attribute('href') for news in rel_news])
+    contenido = " ".join(contenido)
+
+    return autor, contenido, rel_news_url
