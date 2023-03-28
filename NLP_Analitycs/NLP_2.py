@@ -1,9 +1,12 @@
 # %%
 # Librerías
+from gensim.corpora.dictionary import Dictionary
+from gensim.models import LdaMulticore
 import matplotlib.pyplot as plt
 import pandas as pd
 import spacy
 import nltk
+from tqdm import tqdm
 
 
 # %% Funciones
@@ -21,6 +24,11 @@ def procesamiento(columna: str, df: pd.DataFrame):
     # Modelo de spacy que se utilizará
     # spacy.cli.download('es_core_news_md')
     es = spacy.load('es_core_news_md')
+
+    # Etiquetas a remover del texto lematizado
+    # Tags I want to remove from the text
+    removal = ['ADV', 'PRON', 'CCONJ', 'PUNCT',
+               'PART', 'DET', 'ADP', 'SPACE', 'NUM', 'SYM']
 
     # Convertir a objeto spaCy
     aux = df[columna].str.lower().apply(es)
@@ -54,7 +62,7 @@ def procesamiento(columna: str, df: pd.DataFrame):
 
     # Lemmatization
     df[f'{columna} lematizado'] = df[f'{columna} procesado'].apply(
-        lambda x: {token.orth_: token.lemma_ for token in x})
+        lambda x: [token.lemma_ for token in x if token.pos_ not in removal])
 
     # Procesado a string
     df[f'{columna} procesado'] = df[f'{columna} procesado'].apply(
@@ -106,6 +114,22 @@ def lista_ngramas(val_ent: str, val_pal: str, indice: int, n: int):
     return df_frec
 
 
+def topicos(columna: str, df: pd.DataFrame):
+
+    dictionary = Dictionary(df[f'{columna} lematizado'])
+    # Filtrar los tokens de baja y alta frecuencia. Limitar el vocabulario
+    # si se desea con el parámetro keep_n
+    dictionary.filter_extremes(no_below=5, no_above=0.5, keep_n=None)
+    # Contar el número de ocurrencias de cada palabra única
+    corpus = [dictionary.doc2bow(doc) for doc in df[f'{columna} lematizado']]
+
+    # númeor de iteraciones 50 por defecto
+    # workers equivale al número de cores del computador
+    # passes número de veces que pasa por el corpus para entrenarse
+    lda_model = LdaMulticore(corpus=corpus, id2word=dictionary,
+                             iterations=50, num_topics=8, workers=4, passes=10)
+
+
 # %% LECTURA Y PREPARACIÓN DE LOS DATOS
 # LEER ARCHIVOS CON DATOS
 df_raw = pd.read_csv('./data/raw/database.csv',
@@ -139,7 +163,7 @@ df_trigramas = pd.DataFrame()
 len_df = len(df)
 len_curated = len(df_curated)
 
-for i in range(len_curated, len_curated + len_df):
+for i in tqdm(range(len_curated, len_curated + len_df)):
     aux_palabras = lista_ngramas(df.loc[i - len_curated, 'Entidades de Contenido'],
                                  df.loc[i - len_curated, 'Contenido procesado'], i, 1)
     df_palabras = pd.concat([df_palabras, aux_palabras], ignore_index=True)
