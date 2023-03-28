@@ -1,21 +1,6 @@
 {
     "medios":[
-        {
-            "fuente": "LaRepublica",
-            "clientes": ["Ecopetrol","Enel", "Grupo Argos",
-            "Terpel", "Vanti", "Promigas", "Bancolombia", "BBVA", 
-            "Grupo AVAL", "Davivienda", "Credibanco", "Grupo Sura", "Itau", 
-            "Nequi", "Grupo exito", "Cencosud", "Tiendas D1", "Alkosto", 
-            "Falabella", "Sodimac", "Caracol", "Claro", "etb"]
-        },
-        {
-            "fuente": "Semana",
-            "clientes": ["Ecopetrol","Enel", "Grupo Argos",
-            "Terpel", "Vanti", "Promigas", "Bancolombia", "BBVA", 
-            "Grupo AVAL", "Davivienda", "Credibanco", "Grupo Sura", "Itau", 
-            "Nequi", "Grupo exito", "Cencosud", "Tiendas D1", "Alkosto", 
-            "Falabella", "Sodimac", "Caracol", "Claro", "etb"]
-        },
+        
         {
             "fuente": "ElTiempo",
             "clientes": ["Ecopetrol","Enel", "Grupo Argos", 
@@ -35,6 +20,22 @@
         {
             "fuente": "ElColombiano",
             "clientes": ["Ecopetrol","Enel", "Grupo Argos", "AES chivor", 
+            "Terpel", "Vanti", "Promigas", "Bancolombia", "BBVA", 
+            "Grupo AVAL", "Davivienda", "Credibanco", "Grupo Sura", "Itau", 
+            "Nequi", "Grupo exito", "Cencosud", "Tiendas D1", "Alkosto", 
+            "Falabella", "Sodimac", "Caracol", "Claro", "etb"]
+        },
+        {
+            "fuente": "LaRepublica",
+            "clientes": ["Ecopetrol","Enel", "Grupo Argos",
+            "Terpel", "Vanti", "Promigas", "Bancolombia", "BBVA", 
+            "Grupo AVAL", "Davivienda", "Credibanco", "Grupo Sura", "Itau", 
+            "Nequi", "Grupo exito", "Cencosud", "Tiendas D1", "Alkosto", 
+            "Falabella", "Sodimac", "Caracol", "Claro", "etb"]
+        },
+        {
+            "fuente": "Semana",
+            "clientes": ["Ecopetrol","Enel", "Grupo Argos",
             "Terpel", "Vanti", "Promigas", "Bancolombia", "BBVA", 
             "Grupo AVAL", "Davivienda", "Credibanco", "Grupo Sura", "Itau", 
             "Nequi", "Grupo exito", "Cencosud", "Tiendas D1", "Alkosto", 
