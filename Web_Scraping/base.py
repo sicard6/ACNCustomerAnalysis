@@ -338,11 +338,13 @@ def obtener_contenido_col(driver: sel.webdriver.Edge):
     Returns:
         str: string con todos los párrafos del artículo
     """
-    # No esta leyendo los artículos class="text"
     try:
         contenido = driver.find_elements(
             By.XPATH, './/div[@class="block-text"]//p')
     except:
+        contenido = []
+
+    if contenido == []:
         try:
             contenido = driver.find_elements(
                 By.XPATH, './/div[@class="text"]//p')
