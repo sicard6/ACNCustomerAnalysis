@@ -235,7 +235,7 @@ def obtener_contenido_republica(driver: sel.webdriver.Edge):
 # ---------------------------------------------------------
 
 def obtener_articulos_eltiempo(driver: sel.webdriver.Edge, url: str, titulares, empresa):
-    """obtiene los ariculos de una pagina del tiempo dada la url.
+    """obtiene los ariculos de una pagina de El Tiempo dada la url.
         'https://www.eltiempo.com/buscar?q={empresa}'
         'https://www.eltiempo.com/buscar/{i}?q={empresa}'
 
@@ -274,6 +274,7 @@ def obtener_articulos_eltiempo(driver: sel.webdriver.Edge, url: str, titulares, 
             )
             # print(fechaPub)
             tema = articulos.find_element(By.CLASS_NAME, "category").text
+
             # print(tema)
             titulares.append({'Fecha Extraccion': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                               'Titulo': titulo,
@@ -285,26 +286,29 @@ def obtener_articulos_eltiempo(driver: sel.webdriver.Edge, url: str, titulares, 
                               'Fuente': 'El Tiempo'})
 
 
-def obtener_articulos_eltiempo_dataframe(driver: sel.webdriver.Edge, url: str, titulares, empresa):
-    """obtiene los ariculos de una pagina del tiempo dada la url con titulares en tipo pd.dataframe
-        'https://www.eltiempo.com/buscar?q={empresa}'
-        'https://www.eltiempo.com/buscar/{i}?q={empresa}'
+def obtener_autor_eltiempo(driver: sel.webdriver.Edge):
+    """Funcion que obtiene el autor del articulo
 
     Args:
-        driver (sel.webdriver.Edge): _description_
-        url (str): _description_
-        titulares (_type_): _description_
-        empresa (_type_): _description_
+        driver (sel.webdriver.Edge): driver de selenium
+
+    Returns:
+        str: Nombre del autor del articulo
     """
-    driver.get(url)
-    driver.implicitly_wait(10)
-    buscar = driver.find_element(
-        By.XPATH, '//*[@id="main-container"]/div[16]/div[2]/div[2]/div[2]/div')
-    articulos = buscar.find_elements(By.CLASS_NAME, "listing")
+    autor_eltiempo = ''
+    try:
+        autor_eltiempo = driver.find_element(By.XPATH,"//div[(@class='author_data')]/div/a[@class='who']/span[@class='who']").text
+    except:
+        autor_eltiempo = 'SIN AUTOR'
 
-    titulares = titulares + "hola"
+    if(autor_eltiempo ==''):
+        try:
+            autor_eltiempo = driver.find_element(By.XPATH,"//div[(@class='author_data')]/div/a[@class='who']/span[@class='who-modulo who']").text
+        except:
+            autor_eltiempo = 'SIN AUTOR'
 
-    empresa = empresa+"hellow"
+    return autor_eltiempo
+
 
 # ---------------------------------------------------------
 # ------------------ ELCOLOMBIANO -------------------------
