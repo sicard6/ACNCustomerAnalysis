@@ -2,180 +2,28 @@
   "industrias": [
     {
       "industria": "banking",
-      "Empresas": ["Bancolombia", "BBVA", "Grupo AVAL", "Davivienda"],
+      "Empresas": ["Bancolombia", "BBVA", "Grupo AVAL", "Davivienda","Credibanco","Grupo Sura","Itau","Nequi"],
       "lambda": 0.6
+    },
+    {
+        "industria": "energía",
+        "Empresas": ["Ecopetrol", "Enel", "Grupo Argos", "Terpel", "Vanti","Promigas"],
+        "lambda": 0.6
+    },
+    {
+        "industria": "sector retail",
+        "Empresas": ["Grupo exito", "Cencosud", "Tiendas D1", "Alkosto", "Falabella","Sodimac"],
+        "lambda": 0.6
+    },
+    {
+        "industria": "comunicaciones",
+        "Empresas": ["Caracol", "Claro", "etb"],
+        "lambda": 0.6
     }
   ],
   "medios": [
     {
-      "fuente": "LaRepublica",
-      "clientes": [
-        "Ecopetrol",
-        "Enel",
-        "Grupo Argos",
-        "Terpel",
-        "Vanti",
-        "Promigas",
-        "Bancolombia",
-        "BBVA",
-        "Grupo AVAL",
-        "Davivienda",
-        "Credibanco",
-        "Grupo Sura",
-        "Itau",
-        "Nequi",
-        "Grupo exito",
-        "Cencosud",
-        "Tiendas D1",
-        "Alkosto",
-        "Falabella",
-        "Sodimac",
-        "Caracol",
-        "Claro",
-        "etb"
-      ]
-    },
-    {
-      "fuente": "Semana",
-      "clientes": [
-        "Ecopetrol",
-        "Enel",
-        "Grupo Argos",
-        "Terpel",
-        "Vanti",
-        "Promigas",
-        "Bancolombia",
-        "BBVA",
-        "Grupo AVAL",
-        "Davivienda",
-        "Credibanco",
-        "Grupo Sura",
-        "Itau",
-        "Nequi",
-        "Grupo exito",
-        "Cencosud",
-        "Tiendas D1",
-        "Alkosto",
-        "Falabella",
-        "Sodimac",
-        "Caracol",
-        "Claro",
-        "etb"
-      ]
-    },
-    {
-      "fuente": "ElTiempo",
-      "clientes": [
-        "Ecopetrol",
-        "Enel",
-        "Grupo Argos",
-        "Terpel",
-        "Vanti",
-        "Promigas",
-        "Bancolombia",
-        "BBVA",
-        "Grupo AVAL",
-        "Davivienda",
-        "Credibanco",
-        "Grupo Sura",
-        "Itau",
-        "Nequi",
-        "Grupo exito",
-        "Cencosud",
-        "Tiendas D1",
-        "Alkosto",
-        "Falabella",
-        "Sodimac",
-        "Caracol",
-        "Claro",
-        "etb"
-      ]
-    },
-    {
-      "fuente": "LaSillaVacia",
-      "clientes": [
-        "Ecopetrol",
-        "Enel",
-        "Grupo Argos",
-        "Terpel",
-        "Vanti",
-        "Promigas",
-        "Bancolombia",
-        "BBVA",
-        "Grupo AVAL",
-        "Davivienda",
-        "Credibanco",
-        "Grupo Sura",
-        "Itau",
-        "Nequi",
-        "Grupo exito",
-        "Cencosud",
-        "Tiendas D1",
-        "Alkosto",
-        "Falabella",
-        "Sodimac",
-        "Caracol",
-        "Claro",
-        "etb"
-      ]
-    },
-    {
-      "fuente": "ElColombiano",
-      "clientes": [
-        "Ecopetrol",
-        "Enel",
-        "Grupo Argos",
-        "AES chivor",
-        "Terpel",
-        "Vanti",
-        "Promigas",
-        "Bancolombia",
-        "BBVA",
-        "Grupo AVAL",
-        "Davivienda",
-        "Credibanco",
-        "Grupo Sura",
-        "Itau",
-        "Nequi",
-        "Grupo exito",
-        "Cencosud",
-        "Tiendas D1",
-        "Alkosto",
-        "Falabella",
-        "Sodimac",
-        "Caracol",
-        "Claro",
-        "etb"
-      ]
-    },
-    {
-      "fuente": "Portafolio",
-      "clientes": [
-        "Ecopetrol",
-        "Enel",
-        "Grupo Argos",
-        "AES chivor",
-        "Terpel",
-        "Vanti",
-        "Promigas",
-        "Bancolombia",
-        "BBVA",
-        "Grupo AVAL",
-        "Davivienda",
-        "Credibanco",
-        "Grupo Sura",
-        "Itau",
-        "Nequi",
-        "Grupo exito",
-        "Cencosud",
-        "Tiendas D1",
-        "Alkosto",
-        "Falabella",
-        "Sodimac",
-        "Caracol",
-        "Claro",
-        "etb"
-      ]
+      "fuente": ["LaRepublica","Semana","ElTiempo","LaSillaVacia","ElColombiano","Portafolio"]
     }
   ]
 }
