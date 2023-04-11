@@ -2,7 +2,45 @@
   "industrias": [
     {
       "industria": "banking",
-      "Empresas": ["Bancolombia", "BBVA", "Grupo AVAL", "Davivienda"],
+      "Empresas": [
+        "Bancolombia",
+        "BBVA",
+        "Grupo AVAL",
+        "Davivienda",
+        "Credibanco",
+        "Grupo Sura",
+        "Itau",
+        "Nequi"
+      ],
+      "lambda": 0.6
+    },
+    {
+      "industria": "energía",
+      "Empresas": [
+        "Ecopetrol",
+        "Enel",
+        "Grupo Argos",
+        "Terpel",
+        "Vanti",
+        "Promigas"
+      ],
+      "lambda": 0.6
+    },
+    {
+      "industria": "sector retail",
+      "Empresas": [
+        "Grupo exito",
+        "Cencosud",
+        "Tiendas D1",
+        "Alkosto",
+        "Falabella",
+        "Sodimac"
+      ],
+      "lambda": 0.6
+    },
+    {
+      "industria": "comunicaciones",
+      "Empresas": ["Caracol", "Claro", "etb"],
       "lambda": 0.6
     }
   ],
