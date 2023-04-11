@@ -13,11 +13,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 # %%
 # Empresa con la cual vamos a extraer los articulos
-empresa = str.lower(sys.argv[1])
-if " " in empresa:
-    empresa_ = empresa.replace(" ", "%20")
-else:
-    empresa_ = empresa
+empresa = sys.argv[1].replace("_", " ")
+empresa_ = empresa.lower().replace(" ", "%20")
 num_paginas = 5
 
 # %%
@@ -62,7 +59,7 @@ for i in tqdm(range(1, num_paginas+1)):
                               'Tema': tema,
                               'Resumen': resumen,
                               'Imagen': imagen,
-                              'Empresa': empresa,
+                              'Empresa': empresa.capitalize(),
                               'Fuente': 'Portafolio'
                               })
 

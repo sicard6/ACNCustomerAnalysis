@@ -26,9 +26,8 @@ def convert_fecha(fecha: str):
 
 # %%
 # Empresa con la cual vamos a extraer los articulos
-empresa = str.lower(sys.argv[1])  # input("Digite la empresa a extraer: ")
-if "_" in empresa:
-    empresa = empresa.strip().replace("_", "%20")
+empresa = sys.argv[1].replace("_", " ")
+empresa_ = empresa.lower().replace(" ", "%20")
 # %%
 # cerar driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
 driver = sel.webdriver.Edge()
@@ -64,7 +63,7 @@ for art in articulos:
                           'Resumen': resumen,
                           'URL': url,
                           'Imagen': imagen,
-                          'Empresa': empresa})
+                          'Empresa': empresa.capitalize()})
 
 
 # %%
@@ -114,7 +113,7 @@ for tit in titulares:
 
 # %%
 df = pd.DataFrame(titulares)
-df['Empresa'] = df['Empresa'].str.replace('%20',' ')
+df['Empresa'] = df['Empresa'].str.replace('%20', ' ')
 bs.writeData("database", df)
 
 # %%

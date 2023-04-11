@@ -10,9 +10,8 @@ import sys
 import os as os
 # %%
 # Empresa con la cual vamos a extraer los articulos
-empresa = str.lower(sys.argv[1])  # input("Digite la empresa a extraer: ")
-if "_" in empresa:
-    empresa = empresa.strip().replace("_", "+")
+empresa = sys.argv[1].replace("_", " ")
+empresa_ = empresa.lower().replace(" ", "%20")
 # %%
 # cerar driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
 driver = sel.webdriver.Edge()
@@ -39,7 +38,7 @@ if not (bs.existedb(urlPrinc, "database")):  # Si no existe (elimine el .csv)
                       'Tema': temaPrinc,
                       'URL': urlPrinc,
                       'Imagen': imagenPrinc,
-                      'Empresa': empresa,
+                      'Empresa': empresa.capitalize(),
                       'Fuente': 'La República'})
 
 # el resto, autor, resumen, contenido y relacionados se sacan entrando a la url
@@ -107,5 +106,5 @@ driver.close()
 
 # %%
 df = pd.DataFrame(titulares)
-df['Empresa'] = df['Empresa'].str.replace('+',' ')
+df['Empresa'] = df['Empresa'].str.replace('+', ' ')
 bs.writeData("database", df)

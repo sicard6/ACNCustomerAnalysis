@@ -297,13 +297,15 @@ def obtener_autor_eltiempo(driver: sel.webdriver.Edge):
     """
     autor_eltiempo = ''
     try:
-        autor_eltiempo = driver.find_element(By.XPATH,"//div[(@class='author_data')]/div/a[@class='who']/span[@class='who']").text
+        autor_eltiempo = driver.find_element(
+            By.XPATH, "//div[(@class='author_data')]/div/a[@class='who']/span[@class='who']").text
     except:
         autor_eltiempo = 'SIN AUTOR'
 
-    if(autor_eltiempo ==''):
+    if (autor_eltiempo == ''):
         try:
-            autor_eltiempo = driver.find_element(By.XPATH,"//div[(@class='author_data')]/div/a[@class='who']/span[@class='who-modulo who']").text
+            autor_eltiempo = driver.find_element(
+                By.XPATH, "//div[(@class='author_data')]/div/a[@class='who']/span[@class='who-modulo who']").text
         except:
             autor_eltiempo = 'SIN AUTOR'
 

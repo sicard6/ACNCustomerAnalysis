@@ -151,9 +151,8 @@ def get_contenido(driver):
 # %%
 # Empresa con la cual vamos a extraer los articulos
 # input("Digite la empresa a extraer: ").lower()
-empresa = str.lower(sys.argv[1])
-if "_" in empresa:
-    empresa = empresa.strip().replace("_", "+")
+empresa = sys.argv[1].replace("_", " ")
+empresa_ = empresa.lower().replace(" ", "%20")
 revista = "laSillaVacia"
 
 # %%
@@ -188,7 +187,7 @@ for art in articulos:
         titulares.append({'Fecha Extraccion': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                           'Titulo': titulo,
                           'URL': url,
-                          'Empresa': empresa
+                          'Empresa': empresa.capitalize()
                           })
 
 # %%
@@ -206,7 +205,7 @@ for tit in titulares:
 
 # %%
 df = pd.DataFrame(titulares)
-df['Empresa'] = df['Empresa'].str.replace('+',' ')
+df['Empresa'] = df['Empresa'].str.replace('+', ' ')
 bs.writeData("database", df)
 
 # %%

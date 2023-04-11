@@ -9,11 +9,8 @@ import os as os
 import sys
 # %%
 # Empresa con la cual vamos a extraer los articulos
-empresa = str.lower(sys.argv[1])
-if "_" in empresa:
-    empresa_ = empresa.replace("_", "%20")
-else:
-    empresa_ = empresa
+empresa = sys.argv[1].replace("_", " ")
+empresa_ = empresa.lower().replace(" ", "%20")
 
 # %%
 # crear driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
@@ -85,7 +82,7 @@ for tit in titulares:
 
 # %%
 df = pd.DataFrame(titulares)
-df['Empresa'] = df['Empresa'].str.replace('_',' ')
+df['Empresa'] = df['Empresa'].str.replace('_', ' ')
 bs.writeData("database", df)
 
 # %%
