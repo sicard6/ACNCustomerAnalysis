@@ -3,7 +3,6 @@
 from gensim.corpora.dictionary import Dictionary
 from gensim.models import CoherenceModel
 from gensim.models import LdaMulticore
-import matplotlib.pyplot as plt
 import pandas as pd
 import spacy
 import nltk
@@ -62,7 +61,7 @@ def procesamiento(columna: str, df: pd.DataFrame):
 
     # Lemmatization
     df[f'{columna} lematizado'] = df[f'{columna} procesado'].apply(
-        lambda x: [token.lemma_ for token in x if token.pos_ not in removal])
+        lambda x: ", ".join([token.lemma_ for token in x if token.pos_ not in removal]))
 
     # Procesado a string
     df[f'{columna} procesado'] = df[f'{columna} procesado'].apply(
@@ -111,6 +110,7 @@ def lista_ngramas(val_ent: str, val_pal: str, indice: int, n: int):
         df_frec = pd.DataFrame(
             lista, columns=['Palabra', 'Frecuencia', 'ID_Articulo'])
 
+    df_frec.index.name = 'ID_Token'
     return df_frec
 
 
@@ -174,7 +174,7 @@ def n_topicos(corpus: list, diccionario: Dictionary, n_iterations: int = 10,
     return n
 
 
-def lda_model(df: pd.DataFrame, columna: str, filtro_inf: int = 1, filtro_sup: float = 0.5,
+def lda_model(df: pd.DataFrame, columna: str, filtro_inf: int = 1, filtro_sup: float = 0.2,
               iteraciones: int = 50, workers: int = 4, passes: int = 10, n_palabras: int = None):
     """Creación y ejecución del modelo LDA para la definición de tópicos y asignación de los
     mismos a los artículos
@@ -185,7 +185,7 @@ def lda_model(df: pd.DataFrame, columna: str, filtro_inf: int = 1, filtro_sup: f
         filtro_inf (int, optional): número mínimo de apariciones de una palabra para ser 
         considerada. Defaults to 1.
         filtro_sup (float, optional): proporción máxima de artíulos en los que puede 
-        aparecer una palabra. Defaults to 0.5.
+        aparecer una palabra. Defaults to 0.2.
         n_iterations (int, optional): número de iteraciones. Defaults to 50. 
         n_workers (int, optional): equivale al número de cores del computador. Defaults to 4.
         n_passes (int, optional): número de veces que pasa por el corpus para entrenarse. 
@@ -204,8 +204,7 @@ def lda_model(df: pd.DataFrame, columna: str, filtro_inf: int = 1, filtro_sup: f
         no_below=filtro_inf, no_above=filtro_sup, keep_n=n_palabras)
     corpus = [diccionario.doc2bow(doc) for doc in df[f'{columna} lematizado']]
 
-    n = n_topicos(df=df, columna=columna, corpus=corpus,
-                  diccionario=diccionario)
+    n = n_topicos(corpus=corpus, diccionario=diccionario)
 
     lda_model = LdaMulticore(corpus=corpus, id2word=diccionario,
                              iterations=iteraciones, num_topics=n, workers=workers, passes=passes)
@@ -246,10 +245,11 @@ def dataframe_topicos(empresa_topicos: dict, topicos_general: dict):
             count_top += 1
         count += count_top
 
-    df_dict_topicos = pd.DataFrame(topicos_mod, columns=['ID', 'Topicos'])
+    df_dict_topicos = pd.DataFrame(
+        topicos_mod, columns=['ID_Topicos', 'Palabras_Topicos'])
 
     df_topicos = df_topicos.set_index('index')
-    df_dict_topicos = df_dict_topicos.set_index('ID')
+    df_dict_topicos = df_dict_topicos.set_index('ID_Topicos')
 
     df_topicos.to_csv('../data/curated/topicos.csv', encoding='utf-8-sig')
     df_dict_topicos.to_csv(
@@ -288,7 +288,11 @@ df = df_raw[~df_raw['Titulo'].isin(df_curated['Titulo'])]
 # %%
 if len(df) > 0:
     # Estandarización formato fechas
-    df['Contenido'] = df['Contenido'].str.replace('\r|\n|\f|\v', ' ')
+    df['Contenido'] = df['Contenido'].str.replace(
+        '\r|\n|\f|\v', ' ')
+    df['Titulo'] = df['Titulo'].str.replace('\r|\n|\f|\v', ' ')
+    df['Resumen'] = df['Resumen'].str.replace('\r|\n|\f|\v', ' ')
+    df['Autor'] = df['Autor'].str.replace('\r|\n|\f|\v', ' ')
     df['Fecha Publicacion'] = pd.to_datetime(
         df['Fecha Publicacion']).dt.strftime('%d-%m-%Y')
     df['Fecha Extraccion'] = pd.to_datetime(
@@ -299,7 +303,8 @@ if len(df) > 0:
     df = df.drop(df[df['Contenido'] == "SIN PARRAFOS"].index).reset_index(
         drop=True)
     df = df.drop(df[df['Contenido'].isna()].index).reset_index(drop=True)
-    df = df.drop(df[df.Contenido.str.len() < 30].index).reset_index(drop=True)
+    df = df.drop(df[df['Fuente'].isna()].index).reset_index(drop=True)
+    df = df.drop(df[df.Contenido.str.len() < 500].index).reset_index(drop=True)
 # %%
 procesamiento('Contenido', df)
 df_palabras = pd.DataFrame()
@@ -323,6 +328,7 @@ for i in range(len_curated, len_curated + len_df):
     df_trigramas = pd.concat([df_trigramas, aux_trigramas], ignore_index=True)
 
 df_curated = pd.concat([df_curated, df], ignore_index=True)
+df_curated.index.name = 'ID_Articulo'
 df_curated.to_csv('./data/curated/curated_database.csv', encoding='utf-8-sig')
 
 palabras_csv = pd.read_csv(
@@ -339,4 +345,6 @@ trigramas_csv = pd.read_csv(
     './data/curated/trigramas.csv', encoding='utf-8-sig', index_col=[0])
 df_trigramas = pd.concat([trigramas_csv, df_trigramas], ignore_index=True)
 df_trigramas.to_csv('./data/curated/trigramas.csv', encoding='utf-8-sig')
+
+# topicos(df_curated, 'Contenido')
 # %%
