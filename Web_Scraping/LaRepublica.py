@@ -14,7 +14,13 @@ empresa = sys.argv[1].replace("_", " ")
 empresa_ = empresa.lower().replace(" ", "%20")
 # %%
 # cerar driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
-driver = sel.webdriver.Edge()
+try:
+    driver = sel.webdriver.Edge()
+except:
+    cwd = os.getcwd()
+    path = os.path.join(cwd, 'msedgedriver.exe')
+    path.replace("\\\\", "\\")
+    driver = sel.webdriver.Edge(executable_path=path.replace("\\\\", "\\"))
 driver.get(f'https://www.larepublica.co/buscar?term={empresa}')
 driver.implicitly_wait(10)  # Nueva metodología de wait
 

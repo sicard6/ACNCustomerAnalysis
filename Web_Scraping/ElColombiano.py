@@ -14,7 +14,13 @@ empresa_ = empresa.lower().replace(" ", "%20")
 
 # %%
 # crear driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
-driver = sel.webdriver.Edge()
+try:
+    driver = sel.webdriver.Edge()
+except:
+    cwd = os.getcwd()
+    path = os.path.join(cwd, 'msedgedriver.exe')
+    path.replace("\\\\", "\\")
+    driver = sel.webdriver.Edge(executable_path=path.replace("\\\\", "\\"))
 driver.get(
     f'https://www.elcolombiano.com/busqueda/-/search/{empresa_}/false/false/19810311/20230311/date/true/true/0/0/meta/0/0/0/1')
 driver.implicitly_wait(10)
@@ -30,7 +36,7 @@ driver.delete_all_cookies()
 
 # %%
 # Articulos a extraer
-num_paginas = 5
+num_paginas = 3
 url_princ = driver.current_url[:-1]
 titulares = []
 for i in tqdm(range(1, int(num_paginas) + 1)):

@@ -15,11 +15,17 @@ from selenium.webdriver.support.ui import WebDriverWait
 # Empresa con la cual vamos a extraer los articulos
 empresa = sys.argv[1].replace("_", " ")
 empresa_ = empresa.lower().replace(" ", "%20")
-num_paginas = 5
+num_paginas = 3
 
 # %%
 # crear driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
-driver = sel.webdriver.Edge()
+try:
+    driver = sel.webdriver.Edge()
+except:
+    cwd = os.getcwd()
+    path = os.path.join(cwd, 'msedgedriver.exe')
+    path.replace("\\\\", "\\")
+    driver = sel.webdriver.Edge(executable_path=path.replace("\\\\", "\\"))
 driver.get(f'https://www.portafolio.co/buscar?q={empresa_}')
 driver.maximize_window()
 WebDriverWait(driver, 5)\

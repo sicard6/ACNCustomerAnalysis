@@ -22,16 +22,17 @@
         "Grupo Argos",
         "Terpel",
         "Vanti",
-        "Promigas"
+        "Promigas",
+        "AES Chivor"
       ],
       "lambda": 0.6
     },
     {
       "industria": "sector retail",
       "Empresas": [
-        "Grupo exito",
+        "Grupo Exito",
         "Cencosud",
-        "Tiendas D1",
+        "D1",
         "Alkosto",
         "Falabella",
         "Sodimac"
@@ -40,7 +41,7 @@
     },
     {
       "industria": "comunicaciones",
-      "Empresas": ["Caracol", "Claro", "etb"],
+      "Empresas": ["Caracol", "Claro", "ETB"],
       "lambda": 0.6
     }
   ],
@@ -62,7 +63,7 @@
         "Grupo Sura",
         "Itau",
         "Nequi",
-        "Grupo Éxito",
+        "Grupo Exito",
         "Cencosud",
         "D1",
         "Alkosto",
@@ -90,7 +91,7 @@
         "Grupo Sura",
         "Itau",
         "Nequi",
-        "Grupo Éxito",
+        "Grupo Exito",
         "Cencosud",
         "D1",
         "Alkosto",
@@ -118,7 +119,7 @@
         "Grupo Sura",
         "Itau",
         "Nequi",
-        "Grupo Éxito",
+        "Grupo Exito",
         "Cencosud",
         "D1",
         "Alkosto",
@@ -146,7 +147,7 @@
         "Grupo Sura",
         "Itau",
         "Nequi",
-        "Grupo Éxito",
+        "Grupo Exito",
         "Cencosud",
         "D1",
         "Alkosto",
@@ -175,7 +176,7 @@
         "Grupo Sura",
         "Itau",
         "Nequi",
-        "Grupo Éxito",
+        "Grupo Exito",
         "Cencosud",
         "D1",
         "Alkosto",
@@ -204,7 +205,7 @@
         "Grupo Sura",
         "Itau",
         "Nequi",
-        "Grupo Éxito",
+        "Grupo Exito",
         "Cencosud",
         "D1",
         "Alkosto",
