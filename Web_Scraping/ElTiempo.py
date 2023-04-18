@@ -21,18 +21,26 @@ from selenium.webdriver.support import expected_conditions as EC
 # Web Scraping El tiempo
 
 # %%
-# Empresa con la cual vamos a extraer los articulos
-# str.lower(sys.argv[1])  # input("Digite la empresa a extraer: ")
-empresa = str.lower(sys.argv[1])
-paginas = 5  # input("la cantidad de paginas ")
+# Empresa con la cual vamos a extraer los articulos. Comentar y descomentar con respecto a la utilidad que va a tener
+# empresa = input("Digite la empresa a extraer: ") # Utilizar este método si no se usará un archivo json, y se ingresa manualmente la empresa
+
+empresa = sys.argv[1].replace("_", " ")
+empresa_ = empresa.lower().replace(" ", "%20")
+
+paginas = 3  # Se recolecta los artículos de 5 páginas del Tiempo
 
 # %%
 # cerar driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
-driver = sel.webdriver.Edge()
+try:
+    driver = sel.webdriver.Edge()
+except:
+    cwd = os.getcwd()
+    path = os.path.join(cwd, 'msedgedriver.exe')
+    path.replace("\\\\", "\\")
+    driver = sel.webdriver.Edge(executable_path=path.replace("\\\\", "\\"))
 
 # %%
 titulares = []
-get_url = driver.current_url
 
 # hacer el WS del primer url
 bs.obtener_articulos_eltiempo(
@@ -84,6 +92,38 @@ for tit in titulares:
 
     # agregar contenido al dict de titulares
     tit['Contenido'] = contenido
+
+    # Para agregar el Autor del artículo
+    autor_eltiempo = ''
+    try:
+        autor_eltiempo = driver.find_element(
+            By.XPATH, "//div[(@class='author_data')]/div/a[@class='who']/span[@class='who']").text
+    except:
+        autor_eltiempo = 'SIN AUTOR'
+
+    if (autor_eltiempo == ''):
+        try:
+            autor_eltiempo = driver.find_element(
+                By.XPATH, "//div[(@class='author_data')]/div/a[@class='who']/span[@class='who-modulo who']").text
+        except:
+            autor_eltiempo = 'SIN AUTOR'
+
+    tit['Autor'] = autor_eltiempo
+
+    # Sacar la imagen del artículo
+    imagen = ''
+
+    try:
+        imagen_temp = driver.find_element(
+            By.XPATH, "//div[@class='recurso_apertura']")
+    except:
+        imagen = 'SIN IMAGEN'
+    else:
+        imagen = imagen_temp.find_element(
+            By.XPATH, './/img').get_attribute('src')
+
+    tit['Imagen'] = imagen
+
     driver.delete_all_cookies()  # clear all cookies in scope of session
 
     # agregar lista de URLs de noticias relacionadas

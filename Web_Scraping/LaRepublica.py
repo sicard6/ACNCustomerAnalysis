@@ -10,13 +10,21 @@ import sys
 import os as os
 # %%
 # Empresa con la cual vamos a extraer los articulos
-empresa = str.lower(sys.argv[1])  # input("Digite la empresa a extraer: ")
-
+empresa = sys.argv[1].replace("_", " ")
+empresa_ = empresa.lower().replace(" ", "%20")
 # %%
 # cerar driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
-driver = sel.webdriver.Edge()
-driver.get(f'https://www.larepublica.co/{empresa}')
-time.sleep(2)
+try:
+    driver = sel.webdriver.Edge()
+except:
+    cwd = os.getcwd()
+    path = os.path.join(cwd, 'msedgedriver.exe')
+    path.replace("\\\\", "\\")
+    driver = sel.webdriver.Edge(executable_path=path.replace("\\\\", "\\"))
+driver.get(f'https://www.larepublica.co/buscar?term={empresa}')
+driver.implicitly_wait(10)  # Nueva metodología de wait
+
+driver.delete_all_cookies()
 
 # %%
 # sacar primer titular CON BASE DE DATOS INICIAL
@@ -36,7 +44,7 @@ if not (bs.existedb(urlPrinc, "database")):  # Si no existe (elimine el .csv)
                       'Tema': temaPrinc,
                       'URL': urlPrinc,
                       'Imagen': imagenPrinc,
-                      'Empresa': empresa,
+                      'Empresa': empresa.capitalize(),
                       'Fuente': 'La República'})
 
 # el resto, autor, resumen, contenido y relacionados se sacan entrando a la url
@@ -73,6 +81,7 @@ for art in articulos:
 # %%
 # se carga la info del primer titular
 driver.get(titulares[0]['URL'])
+driver.implicitly_wait(10)  # Nueva metodología de wait
 
 # agregar resumen al dict de titularesPrinc
 titulares[0]['Resumen'] = bs.obtener_resumen(driver)
@@ -83,6 +92,7 @@ titulares[0]['Resumen'] = bs.obtener_resumen(driver)
 for tit in titulares:
 
     driver.get(tit['URL'])
+    driver.implicitly_wait(10)  # Nueva metodología de wait
 
     # agregar autor al dict de titulares
     tit['Autor'] = bs.obtener_autor(driver)
@@ -93,6 +103,8 @@ for tit in titulares:
     # agregar lista de URLs de noticias relacionadas
     tit['RelNewsUrls'] = bs.obtener_articulos_relacionados(driver)
 
+    driver.delete_all_cookies()
+
     # se podria agregar un if resumen vacio, llamar a resumen. (para las 3 noticias principales)
 
 # %%
@@ -100,4 +112,5 @@ driver.close()
 
 # %%
 df = pd.DataFrame(titulares)
+df['Empresa'] = df['Empresa'].str.replace('+', ' ')
 bs.writeData("database", df)
