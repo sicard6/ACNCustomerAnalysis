@@ -17,10 +17,8 @@ empresa_ = empresa.lower().replace(" ", "%20")
 try:
     driver = sel.webdriver.Edge()
 except:
-    cwd = os.getcwd()
-    path = os.path.join(cwd, 'msedgedriver.exe')
-    path.replace("\\\\", "\\")
-    driver = sel.webdriver.Edge(executable_path=path.replace("\\\\", "\\"))
+    driver = sel.webdriver.Edge(
+        executable_path='Web_Scraping\msedgedriver.exe')
 driver.get(
     f'https://www.elcolombiano.com/busqueda/-/search/{empresa_}/false/false/19810311/20230311/date/true/true/0/0/meta/0/0/0/1')
 driver.implicitly_wait(10)

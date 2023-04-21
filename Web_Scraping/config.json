@@ -1,7 +1,7 @@
 {
   "industrias": [
     {
-      "industria": "banking",
+      "industria": "Servicios financieros",
       "Empresas": [
         "Bancolombia",
         "BBVA",
@@ -15,7 +15,7 @@
       "lambda": 0.6
     },
     {
-      "industria": "energía",
+      "industria": "Recursos",
       "Empresas": [
         "Ecopetrol",
         "Enel",
@@ -28,7 +28,7 @@
       "lambda": 0.6
     },
     {
-      "industria": "sector retail",
+      "industria": "Comercio minorista",
       "Empresas": [
         "Grupo Exito",
         "Cencosud",
@@ -40,7 +40,7 @@
       "lambda": 0.6
     },
     {
-      "industria": "comunicaciones",
+      "industria": "Comunicaciones y Tecnología",
       "Empresas": ["Caracol", "Claro", "ETB"],
       "lambda": 0.6
     }

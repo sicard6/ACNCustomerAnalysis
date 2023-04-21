@@ -17,11 +17,9 @@ empresa_ = empresa.lower().replace(" ", "%20")
 try:
     driver = sel.webdriver.Edge()
 except:
-    cwd = os.getcwd()
-    path = os.path.join(cwd, 'msedgedriver.exe')
-    path.replace("\\\\", "\\")
-    driver = sel.webdriver.Edge(executable_path=path.replace("\\\\", "\\"))
-driver.get(f'https://www.larepublica.co/buscar?term={empresa}')
+    driver = sel.webdriver.Edge(
+        executable_path='Web_Scraping\msedgedriver.exe')
+driver.get(f'https://www.larepublica.co/buscar?term={empresa_}')
 driver.implicitly_wait(10)  # Nueva metodología de wait
 
 driver.delete_all_cookies()
@@ -114,3 +112,4 @@ driver.close()
 df = pd.DataFrame(titulares)
 df['Empresa'] = df['Empresa'].str.replace('+', ' ')
 bs.writeData("database", df)
+driver.quit()

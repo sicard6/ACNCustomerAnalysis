@@ -25,11 +25,9 @@ empresa_ = empresa.lower().replace(" ", "%20")
 try:
     driver = sel.webdriver.Edge()
 except:
-    cwd = os.getcwd()
-    path = os.path.join(cwd, 'msedgedriver.exe')
-    path.replace("\\\\", "\\")
-    driver = sel.webdriver.Edge(executable_path=path.replace("\\\\", "\\"))
-driver.get(f'https://www.lasillavacia.com/buscar?q={empresa}&cat=all')
+    driver = sel.webdriver.Edge(
+        executable_path='Web_Scraping\msedgedriver.exe')
+driver.get(f'https://www.lasillavacia.com/buscar?q={empresa_}&cat=all')
 
 i = 1
 try:
