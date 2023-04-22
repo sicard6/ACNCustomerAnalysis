@@ -15,17 +15,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 # Empresa con la cual vamos a extraer los articulos
 empresa = sys.argv[1].replace("_", " ")
 empresa_ = empresa.lower().replace(" ", "%20")
-num_paginas = 3
+num_paginas = 5
 
 # %%
 # crear driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
 try:
     driver = sel.webdriver.Edge()
 except:
-    cwd = os.getcwd()
-    path = os.path.join(cwd, 'msedgedriver.exe')
-    path.replace("\\\\", "\\")
-    driver = sel.webdriver.Edge(executable_path=path.replace("\\\\", "\\"))
+    driver = sel.webdriver.Edge(
+        executable_path='Web_Scraping\msedgedriver.exe')
 driver.get(f'https://www.portafolio.co/buscar?q={empresa_}')
 driver.maximize_window()
 WebDriverWait(driver, 5)\
@@ -81,4 +79,4 @@ df = pd.DataFrame(titulares)
 bs.writeData("database", df)
 
 # %%
-driver.close()
+driver.quit()

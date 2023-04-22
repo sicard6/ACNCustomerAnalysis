@@ -33,10 +33,8 @@ empresa_ = empresa.lower().replace(" ", "%20")
 try:
     driver = sel.webdriver.Edge()
 except:
-    cwd = os.getcwd()
-    path = os.path.join(cwd, 'msedgedriver.exe')
-    path.replace("\\\\", "\\")
-    driver = sel.webdriver.Edge(executable_path=path.replace("\\\\", "\\"))
+    driver = sel.webdriver.Edge(
+        executable_path='Web_Scraping\msedgedriver.exe')
 driver.get(f'https://www.semana.com/buscador/?query={empresa}')
 driver.implicitly_wait(10)  # Nueva metodología de wait
 

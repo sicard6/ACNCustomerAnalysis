@@ -27,17 +27,15 @@ from selenium.webdriver.support import expected_conditions as EC
 empresa = sys.argv[1].replace("_", " ")
 empresa_ = empresa.lower().replace(" ", "%20")
 
-paginas = 3  # Se recolecta los artículos de 5 páginas del Tiempo
+paginas = 5  # Se recolecta los artículos de 5 páginas del Tiempo
 
 # %%
 # cerar driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
 try:
     driver = sel.webdriver.Edge()
 except:
-    cwd = os.getcwd()
-    path = os.path.join(cwd, 'msedgedriver.exe')
-    path.replace("\\\\", "\\")
-    driver = sel.webdriver.Edge(executable_path=path.replace("\\\\", "\\"))
+    driver = sel.webdriver.Edge(
+        executable_path='Web_Scraping\msedgedriver.exe')
 
 # %%
 titulares = []
