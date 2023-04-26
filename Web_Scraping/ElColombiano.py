@@ -34,7 +34,7 @@ driver.delete_all_cookies()
 
 # %%
 # Articulos a extraer
-num_paginas = 3
+num_paginas = 5
 url_princ = driver.current_url[:-1]
 titulares = []
 for i in tqdm(range(1, int(num_paginas) + 1)):

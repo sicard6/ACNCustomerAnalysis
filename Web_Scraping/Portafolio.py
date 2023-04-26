@@ -2,7 +2,6 @@
 from selenium.webdriver.common.by import By
 from datetime import datetime
 import selenium as sel
-from tqdm import tqdm
 import pandas as pd
 import base as bs
 import os as os
@@ -35,7 +34,7 @@ WebDriverWait(driver, 5)\
 # Articulos a extraer
 url_princ = f'https://www.portafolio.co/buscar?q={empresa_}&page='
 titulares = []
-for i in tqdm(range(1, num_paginas+1)):
+for i in range(1, num_paginas+1):
     if i != 1:
         aux = str(i)
         url_a_buscar = url_princ+aux
@@ -44,11 +43,11 @@ for i in tqdm(range(1, num_paginas+1)):
         driver.find_elements(
             By.XPATH, './/div[contains(@class, "listing-item  ")]')
 
-    for art in tqdm(articulos):
+    for art in articulos:
         url = art.find_element(
             By.XPATH, './/h3[@class="listing-title"]//a').get_attribute('href')
         if not (bs.existedb(url, "database")):
-            titulo = articulos[0].find_element(
+            titulo = art.find_element(
                 By.XPATH, './/h3[@class="listing-title"]//a').text
             fechaP = bs.obtener_fecha_port(art)
             tema = art.find_element(
@@ -68,7 +67,7 @@ for i in tqdm(range(1, num_paginas+1)):
                               })
 
 # %%
-for tit in tqdm(titulares):
+for tit in titulares:
     driver.get(tit["URL"])
     driver.implicitly_wait(10)
     tit['Autor'], tit['Contenido'], tit['RelNewsUrls'] = bs.obtener_autor_contenido_relsnews(

@@ -392,7 +392,7 @@ def obtener_fecha_port(driver: sel.webdriver.Edge):
         date.date: fecha de publicación en formato dd/mm/YYYY
     """
     meses = {'Ene': '1', 'Feb': '2', 'Mar': '3', 'Abr': '4', 'May': '5', 'Jun': '6',
-             'Jul': '7', 'Ago': '8', 'Sep': '9', 'Oct': '10', 'Nov': '11', 'Dic': '12'}
+             'Jul': '7', 'Ago': '8', 'Sept': '9', 'Oct': '10', 'Nov': '11', 'Dic': '12'}
     fecha_texto = driver.find_element(By.XPATH, './/div[@class="time"]').text
     fecha_lista = fecha_texto.rsplit('- ')[1].split()[:4]
     del fecha_lista[2]

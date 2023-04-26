@@ -114,7 +114,7 @@ def lista_ngramas(val_ent: str, val_pal: str, indice: int, n: int):
     return df_frec
 
 
-def mejor_puntaje(topicos: list, puntaje_umass: list):
+def mejor_puntaje(topicos: list, puntaje_v: list):
     """Función para determinar cúal es el menor tópico con mejor puntaje de 
     coherencia.
     Valor mas a la izquierda que sea <= puntaje minimo por 0.9 (entre 2 y 12 topicos)
@@ -122,14 +122,14 @@ def mejor_puntaje(topicos: list, puntaje_umass: list):
     Args:
         topicos (list): lista del número de tópicos considerados en los puntajes de 
         coherencia
-        puntaje_umass (list): list de puntajes para cada uno de los tópicos
+        puntaje_v (list): list de puntajes para cada uno de los tópicos
 
     Returns:
         int: mejor número de tópicos según criterio definido
     """
-    puntaje_min = min(puntaje_umass)
-    for n in range(len(puntaje_umass)):
-        if puntaje_umass[n] <= puntaje_min*(0.9):
+    puntaje_max = max(puntaje_v)
+    for n in range(len(puntaje_v)):
+        if puntaje_v[n] >= puntaje_max*(0.9):
             break
     return topicos[n]
 
@@ -158,19 +158,19 @@ def n_topicos(corpus: list, diccionario: Dictionary, n_iterations: int = 10,
         int: número de topicos a considerar en el modelo LDA
     """
     topicos = []
-    puntaje_umass = []
-    # score_v = []
+    # puntaje_umass = []
+    puntaje_v = []
     for i in range(min_topicos, max_topicos + 1, 1):
         lda_model = LdaMulticore(corpus=corpus, id2word=diccionario, iterations=n_iterations,
                                  num_topics=i, workers=n_workers, passes=n_passes, random_state=n_random_state)
-        cm_umass = CoherenceModel(
-            model=lda_model, corpus=corpus, dictionary=diccionario, coherence='u_mass')
-        # cm_v = CoherenceModel(
-        #     model=lda_model, texts=df[f'{columna} lematizado'], corpus=corpus, dictionary=diccionario, coherence='c_v')
+        # cm_umass = CoherenceModel(model=lda_model, corpus=corpus, dictionary=diccionario, coherence='u_mass')
+        cm_v = CoherenceModel(model=lda_model, corpus=corpus,
+                              dictionary=diccionario, coherence='c_v')
         topicos.append(i)
-        puntaje_umass.append(cm_umass.get_coherence())
-        # score_v.append(cm_v.get_coherence())
-    n = mejor_puntaje(topicos, puntaje_umass)
+        # puntaje_umass.append(cm_umass.get_coherence())
+        puntaje_v.append(cm_v.get_coherence())
+
+    n = mejor_puntaje(topicos, puntaje_v)
     return n
 
 
@@ -303,7 +303,6 @@ if len(df) > 0:
     df = df.drop(df[df['Contenido'] == "SIN PARRAFOS"].index).reset_index(
         drop=True)
     df = df.drop(df[df['Contenido'].isna()].index).reset_index(drop=True)
-    df = df.drop(df[df['Fuente'].isna()].index).reset_index(drop=True)
     df = df.drop(df[df.Contenido.str.len() < 500].index).reset_index(drop=True)
 # %%
 procesamiento('Contenido', df)
@@ -328,6 +327,11 @@ for i in range(len_curated, len_curated + len_df):
     df_trigramas = pd.concat([df_trigramas, aux_trigramas], ignore_index=True)
 
 df_curated = pd.concat([df_curated, df], ignore_index=True)
+# Eliminar Aquellos con titulos repetidos
+df_curated = df_curated[~df_curated['Titulo'].duplicated()
+                        ].reset_index(drop=True)
+df_curated = df_curated[~df_curated['Fecha Publicacion'].isna()].reset_index(
+    drop=True)
 df_curated.index.name = 'ID_Articulo'
 df_curated.to_csv('./data/curated/curated_database.csv', encoding='utf-8-sig')
 
