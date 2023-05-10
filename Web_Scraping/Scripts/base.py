@@ -286,9 +286,9 @@ def obtener_articulos_eltiempo(driver: sel.webdriver.Edge, url: str, titulares, 
              'AGOSTO': '8', 'SEPTIEMBRE': '9', 'OCTUBRE': '10', 'NOVIEMBRE': '11', 'DICIEMBRE': '12'}
     driver.get(url)
     driver.implicitly_wait(10)
-    buscar = driver.find_element(
-        By.XPATH, '//*[@id="main-container"]/div[16]/div[2]/div[2]/div[2]/div')
-    articulos = buscar.find_elements(By.CLASS_NAME, "listing")
+    # buscar = driver.find_element(
+    #     By.XPATH, '//*[@id="main-container"]/div[16]/div[2]/div[2]/div[2]/div')
+    articulos = driver.find_elements(By.CLASS_NAME, "listing")
 
     for articulos in articulos:
         aux = articulos.find_element(

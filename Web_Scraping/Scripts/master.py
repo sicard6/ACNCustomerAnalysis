@@ -9,6 +9,5 @@ for i in data["medios"]:
     for j in i["clientes"]:
         if " " in j:
             j = j.strip().replace(" ", "_")
-        if i['fuente'] == 'Portafolio' and j == 'Caracol':
-            os.system(f"python Web_Scraping\{i['fuente']}.py {j}")
+            os.system(f"python Web_Scraping\Scripts\{i['fuente']}.py {j}")
 # %%

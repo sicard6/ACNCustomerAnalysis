@@ -1,10 +1,8 @@
 # %%
 from selenium.webdriver.common.by import By
 from datetime import datetime
-import selenium as sel
 import pandas as pd
 import base as bs
-import os as os
 import sys
 
 from selenium.webdriver.support import expected_conditions as EC
@@ -12,14 +10,14 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 # %%
 # Empresa con la cual vamos a extraer los articulos
-empresa = 'Ecopetrol'  # sys.argv[1]
+empresa = sys.argv[1]
 empresa_ = empresa.lower().replace("_", "%20")
 num_paginas = 5
 
 # %%
 # crear driver... MODIFICAR DEPENDIENDO DEL NAVEGADOR
 driver = bs.ejecutar_driver(f'https://www.portafolio.co/buscar?q={empresa_}')
-WebDriverWait(driver, 5)\
+WebDriverWait(driver, 500)\
     .until(EC.element_to_be_clickable((By.XPATH,
                                       './/button[@class="align-right secondary slidedown-button"]')))\
     .click()
@@ -40,7 +38,7 @@ for i in range(1, num_paginas+1):
     for art in articulos:
         url = art.find_element(
             By.XPATH, './/h3[@class="listing-title"]//a').get_attribute('href')
-        if not (bs.existedb(url, "database")):
+        if not (bs.existedb(url, "database", empresa)):
             titulo = art.find_element(
                 By.XPATH, './/h3[@class="listing-title"]//a').text
             fechaP = bs.obtener_fecha_port(art)

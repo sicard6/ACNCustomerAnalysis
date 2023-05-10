@@ -1,11 +1,8 @@
 # %%
 from selenium.webdriver.common.by import By
 from datetime import datetime
-import selenium as sel
-from tqdm import tqdm
 import pandas as pd
 import base as bs
-import os as os
 import sys
 # %%
 # Empresa con la cual vamos a extraer los articulos
@@ -29,7 +26,7 @@ driver = bs.ejecutar_driver(
 num_paginas = 5
 url_princ = driver.current_url[:-1]
 titulares = []
-for i in tqdm(range(1, int(num_paginas) + 1)):
+for i in range(1, int(num_paginas) + 1):
     aux = str(i)
     url_a_buscar = url_princ+aux
     driver.get(url_a_buscar)
@@ -37,7 +34,7 @@ for i in tqdm(range(1, int(num_paginas) + 1)):
     articulos = driver.find_elements(
         By.XPATH, './/li[@class="element   full-access norestricted"]')
 
-    for art in tqdm(articulos):
+    for art in articulos:
         url = art.find_element(
             By.XPATH, './/div[contains(@class, "right")]//a').get_attribute('href')
         if not (bs.existedb(url, "database", empresa)):
@@ -78,7 +75,6 @@ for tit in titulares:
 
 # %%
 df = pd.DataFrame(titulares)
-df['Empresa'] = df['Empresa'].str.replace('_', ' ')
 bs.writeData("database", df)
 
 # %%

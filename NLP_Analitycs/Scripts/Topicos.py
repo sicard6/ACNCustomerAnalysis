@@ -1,4 +1,5 @@
 # Librerías
+import os
 import spacy
 import nltk
 import pyLDAvis.gensim_models
@@ -7,27 +8,30 @@ from gensim.models import CoherenceModel
 from gensim.models import LdaMulticore
 from gensim.corpora.dictionary import Dictionary
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set()
+import sys
 
-# %% INCLUSIÓN DE BIGRAMAS Y TRIGRAMAS
+# %%
+# INCLUIR BIGRAMAS Y TRIGRAMAS EN EL DICCIONARIO PARA LOS TÓPICOS
+
 # Importar documento a procesar
-df = pd.read_csv('../data/curated/curated_database.csv',
+df = pd.read_csv('/Users/'+os.getlogin()+'/OneDrive - Accenture/ACNCustomerAnalysis/data/curated/curated_database.csv',
                  encoding='utf-8-sig', index_col=[0])
+
 # Hasta el momento la única columna procesada ha sido el Contenido
 columna = 'Contenido'
+# columna = sys[1]
 df[f'{columna} lematizado'] = df[f'{columna} lematizado'].apply(
     lambda x: x.replace('[', '').replace(']', '').replace('\'', '').split(', '))
 df[f'{columna} procesado'] = df[f'{columna} procesado'].apply(
     lambda x: x.replace('[', '').replace(']', '').replace('\'', '').split(', '))
 dictionary = Dictionary(df[f'{columna} lematizado'])
 # Filtrar los tokens de baja y alta frecuencia. Limitar el vocabulario
+# a un máximo de 100 palabras
 dictionary.filter_extremes(no_below=5, no_above=0.5)
 # Contar el número de ocurrencias de cada palabra única
 corpus = [dictionary.doc2bow(doc) for doc in df[f'{columna} lematizado']]
 
-# %%
+
 bigram_measure = nltk.collocations.BigramAssocMeasures()
 
 finder = nltk.collocations.BigramCollocationFinder\
@@ -37,7 +41,7 @@ finder = nltk.collocations.BigramCollocationFinder\
 finder.apply_freq_filter(50)
 bigram_scores = finder.score_ngrams(bigram_measure.pmi)
 
-# %%
+
 trigram_measure = nltk.collocations.TrigramAssocMeasures()
 
 finder = nltk.collocations.TrigramCollocationFinder\
@@ -47,21 +51,27 @@ finder = nltk.collocations.TrigramCollocationFinder\
 finder.apply_freq_filter(50)
 trigram_scores = finder.score_ngrams(trigram_measure.pmi)
 
-# %%
+
 bigram_pmi = pd.DataFrame(bigram_scores)
 bigram_pmi.columns = ['bigram', 'pmi']
 bigram_pmi.sort_values(by='pmi', axis=0, ascending=False, inplace=True)
 
-# %%
+
 trigram_pmi = pd.DataFrame(trigram_scores)
 trigram_pmi.columns = ['trigram', 'pmi']
 trigram_pmi.sort_values(by='pmi', axis=0, ascending=False, inplace=True)
 
-# %%
-# Filter for noun-type structures bigrams
 
-
+# Filtro de bigramas de estructuras de tipo sustantivo
 def bigram_filter(bigram):
+    """Función para identificar si alguna palabra del bigrama los sustantivos
+
+    Args:
+        bigram: Token etiquetado con su categoría gramatical
+
+    Returns:
+        bool: True si es un sustantivo
+    """
     tag = nltk.pos_tag(bigram)
     if tag[0][1] not in ['JJ', 'NN'] and tag[1][1] not in ['NN']:
         return False
@@ -71,11 +81,18 @@ def bigram_filter(bigram):
         return False
     return True
 
-# %%
-# Filter for noun-type structures trigrams
+# Filtro de trigramas de estructuras de tipo sustantivo
 
 
 def trigram_filter(trigram):
+    """Función para identificar si alguna palabra del trigrama es un los sustantivos
+
+    Args:
+        bigram: Token etiquetado con su categoría gramatical
+
+    Returns:
+        bool: True si es un sustantivo
+    """
     tag = nltk.pos_tag(trigram)
     if tag[0][1] not in ['JJ', 'NN'] and tag[1][1] not in ['JJ', 'NN']:
         return False
@@ -86,9 +103,7 @@ def trigram_filter(trigram):
     return True
 
 
-# %%
-# Can set pmi threshold to whatever makes sense - eyeball through and select threshold where n-grams stop making sense
-# choose top 500 ngrams in this case ranked by PMI that have noun like structures
+# Elija los 500 mejores ngramas, en este caso clasificados por PMI, que tengan estructuras similares a sustantivos.
 filtered_bigram = bigram_pmi[bigram_pmi.apply(lambda bigram:
                                               bigram_filter(bigram['bigram'])
                                               and bigram.pmi > 5, axis=1)][:500]
@@ -104,10 +119,16 @@ bigrams = [' '.join(x) for x in filtered_bigram.bigram.values if len(
 trigrams = [' '.join(x) for x in filtered_trigram.trigram.values if len(
     x[0]) > 2 or len(x[1]) > 2 and len(x[2]) > 2]
 
-# %%
-
 
 def replace_ngram(x):
+    """FUnción para reemplazar las palabras por los bigramas o trigramas
+
+    Args:
+        x (str): String a ser reemplazado
+
+    Returns:
+        str: String con la modificación del bigrama o trigrama
+    """
     for gram in trigrams:
         x = x.replace(gram, '_'.join(gram.split()))
     for gram in bigrams:
@@ -115,14 +136,10 @@ def replace_ngram(x):
     return x
 
 
-# %%
 reviews_w_ngrams = df.copy()
 
-# %%
 reviews_w_ngrams['Contenido'] = reviews_w_ngrams['Contenido'].apply(
     lambda x: replace_ngram(x))
-
-# %%
 
 
 def procesamiento(columna: str, df: pd.DataFrame):
@@ -155,7 +172,7 @@ def procesamiento(columna: str, df: pd.DataFrame):
         lambda x: [token for token in x if len(token) > 3 and token.is_alpha])
     # Remover stopwords (combinación de contexto y spacy).
     # Convertir Token a str
-    with open('../NLP_Analitycs/sw_es.txt', 'r', encoding='utf-8') as file:
+    with open('/Users/'+os.getlogin()+'/OneDrive - Accenture/ACNCustomerAnalysis/NLP_Analitycs/Scripts/sw_es.txt', 'r', encoding='utf-8') as file:
         stop_words_contexto = {line.split(None, 1)[0] for line in file}
     es.Defaults.stop_words |= stop_words_contexto
     df[f'{columna} procesado'] = df[f'{columna} procesado'].apply(
@@ -178,12 +195,11 @@ def procesamiento(columna: str, df: pd.DataFrame):
         lambda x: [token.text for token in x])
 
 
-# %%
 procesamiento('Contenido', reviews_w_ngrams)
 reviews_w_ngrams.index.name = 'ID_Articulo'
 
 # %%
-# Extraer y asignar temas por clientes
+# EXTRAER Y ASIGNAR TÓPICOS POR CLIENTES
 
 
 def mejor_puntaje(topicos: list, puntaje_v: list):
@@ -197,15 +213,13 @@ def mejor_puntaje(topicos: list, puntaje_v: list):
         puntaje_v (list): puntaje correspondiente al número de tópicos
 
     Returns:
-        int: un entero que indica el número de tópicos a considerar.
+        int: entero que indica el número de tópicos a considerar.
     """
     puntaje_max = max(puntaje_v)
     for n in range(len(puntaje_v)):
         if puntaje_v[n] >= puntaje_max*(0.9):
             break
     return topicos[n]
-
-# %%
 
 
 def n_topicos(df: pd.DataFrame, columna: str, corpus: list, diccionario: Dictionary, n_iterations: int = 10, n_workers: int = 4, n_passes: int = 10, n_random_state: int = 100, max_topicos: int = 12, min_topicos: int = 2):
@@ -242,8 +256,6 @@ def n_topicos(df: pd.DataFrame, columna: str, corpus: list, diccionario: Diction
     n = mejor_puntaje(topicos, puntaje_v)
     return n
 
-# %%
-
 
 def lda_model(df: pd.DataFrame, columna: str, filtro_inf: int = 1, filtro_sup: float = 0.5, iteraciones: int = 50, workers: int = 4, passes: int = 10, n_palabras: int = None):
     """Creación y ejecución del modelo LDA para la definición de tópicos y asignación de los mismos a los artículos
@@ -259,9 +271,9 @@ def lda_model(df: pd.DataFrame, columna: str, filtro_inf: int = 1, filtro_sup: f
         n_palabras (int, optional): número máximo de palabras a considerar en el diccionario. Por defecto None.
 
     Returns:
-        list, pd:DataFrame: lista de los tópicos y sus palabras correspondientes. Clasificación de los artículos por tema
+        list, pd.DataFrame: lista de los tópicos y sus palabras correspondientes. Clasificación de los artículos por tema
     """
-    # El limite inferior se establece en 1 puesto que hay empresas con pocos artículos (2) como AES chivor
+    # El limite inferior se establece en 1 puesto que hay empresas con pocos artículos (2 en el caso de AES chivor)
     # df[f'{columna} lematizado'] = df[f'{columna} lematizado'].apply(lambda x: x.replace('[', '').replace(']', '').replace('\'', '').split(','))
     diccionario = Dictionary(df[f'{columna} lematizado'])
     # diccionario.filter_extremes(no_below=filtro_inf, no_above=filtro_sup, keep_n=n_palabras)
@@ -277,9 +289,11 @@ def lda_model(df: pd.DataFrame, columna: str, filtro_inf: int = 1, filtro_sup: f
         lda_model, corpus, diccionario, mds='pcoa')
 
     topicos = []
-    num_terms = 10  # Adjust number of words to represent each topic
-    lambd = 0.6  # Adjust this accowrdingly based on tuning above
-    for i in range(1, n+1):  # Adjust this to reflect number of topics chosen for final LDA model
+    num_terms = 10  # Ajustar el número de palabras para representar cada tema
+    lambd = 0.6  # Ajústelo según el ajuste anterior
+    # Obtener las palabras que representa cada tópico
+    # Ajustar esto para reflejar el número de temas elegidos para el modelo LDA final
+    for i in range(1, n+1):
         topic = topic_data.topic_info[topic_data.topic_info.Category ==
                                       'Topic'+str(i)].copy()
         topic['relevance'] = topic['loglift']*(1-lambd)+topic['logprob']*lambd
@@ -292,7 +306,8 @@ def lda_model(df: pd.DataFrame, columna: str, filtro_inf: int = 1, filtro_sup: f
     return topicos, df[['ID_Articulo', 'ID_Topico']]
 
 
-# %%
+# Guardar las palabras correspondientes a cada tópico
+# y el tópico al que corresponde a cada artículo
 topicos_general = {}
 empresa_topicos = {}
 
@@ -304,24 +319,14 @@ for empresa in empresas:
     topicos_general[empresa], empresa_topicos[empresa] = lda_model(
         df=df_aux, columna='Contenido')
 
-# %%
-# import numpy as np
-# np.save('topicos_general.npy', topicos_general)
-# np.save('empresa_topicos.npy', empresa_topicos)
-
-# Load
-# topicos_general = np.load('topicos_general.npy',allow_pickle='TRUE').item()
-# empresa_topicos = np.load('empresa_topicos.npy',allow_pickle='TRUE').item()
-
-# %%
-# Corrección de número de tópico
+# Ajustar los números de los tópicos de 0 a n
 for i in topicos_general.keys():
     min_val = min(empresa_topicos[i]['ID_Topico'].unique())
     if min_val > 1:
         empresa_topicos[i]['ID_Topico'] = empresa_topicos[i]['ID_Topico'] - min_val + 1
 
-# %%
-# Unir todo en un solo dataframe y asignar id de tópicos diferentes
+# Ajustar los tópicos para que no se repitan entre empresas, dado que se
+# obtienen individualmente
 count = 0
 topicos_mod = []
 df_topicos = pd.DataFrame()
@@ -341,7 +346,3 @@ df_dict_topicos = df_dict_topicos.set_index('ID_Topico')
 df_topicos.to_csv('../data/curated/topicos.csv', encoding='utf-8-sig')
 df_dict_topicos.to_csv(
     '../data/curated/dict_topicos.csv', encoding='utf-8-sig')
-
-# %%
-# Teoría de conjuntos para obtener los duplicados
-# Agregar industria
