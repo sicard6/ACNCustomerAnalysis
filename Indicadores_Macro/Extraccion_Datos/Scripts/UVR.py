@@ -63,12 +63,11 @@ def extraer_UVR(driver: sel.webdriver.Edge, conservar: bool = True, fecha_inicio
     driver.find_element(By.XPATH, './/a[@aria-label="CSV"]').click()
 
     time.sleep(5)
+    driver.quit()
 
-    # * means all if need specific format then *.csv
-    lista_de_archivos = glob.glob('/Users/'+os.getlogin()+'/Downloads/*')
-    fuente = max(lista_de_archivos, key=os.path.getctime).replace('\\', '/')
-
-    os.rename(fuente, path+'/Data/Raw/UVR.csv')
+    fuente_archivo = bs.obtener_nombre_descarga(
+        '/Users/'+os.getlogin()+'/Downloads')
+    bs.guardar_archivo(fuente_archivo, path+'/Data/Raw/UVR.xlsx')
 
 
 # %%

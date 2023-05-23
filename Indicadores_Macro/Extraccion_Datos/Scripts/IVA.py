@@ -44,7 +44,14 @@ def extraer_iva(driver: sel.webdriver.Edge):
     url_archivo = sec.find_element(By.XPATH, './/a').get_attribute('href')
 
     driver.get(url_archivo)
-    time.sleep(5)
+
+    time.sleep(15)
+    driver.quit()
+
+    try:
+        os.remove(path+'/Data/Raw/IVA.xlsx')
+    except:
+        pass
 
     path_to_zip_file = '/Users/'+os.getlogin()+'/Downloads/' + \
         nombre_archivo.capitalize()+'.zip'
@@ -58,7 +65,7 @@ def extraer_iva(driver: sel.webdriver.Edge):
     lista_de_archivos = glob.glob(path+'/Data/Raw/*')
     fuente = max(lista_de_archivos, key=os.path.getctime).replace('\\', '/')
 
-    os.rename(fuente, '/'.join(fuente.split('/')[:-1])+'/iva.xlsx')
+    os.rename(fuente, '/'.join(fuente.split('/')[:-1])+'/IVA.xlsx')
 
 
 # %%

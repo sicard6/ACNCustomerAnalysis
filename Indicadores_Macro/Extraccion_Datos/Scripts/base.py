@@ -1,5 +1,6 @@
 import selenium as sel
 import os as os
+import glob
 import time
 
 # ---------------------------------------------------------
@@ -36,3 +37,20 @@ def ejecutar_driver(url: str, notebook: bool = False):
     time.sleep(2)
 
     return driver
+
+
+def guardar_archivo(fuente_archivo: str, destino_archivo: str):
+    try:
+        os.rename(fuente_archivo, destino_archivo)
+    except FileExistsError:
+        os.remove(destino_archivo)
+        os.rename(fuente_archivo, destino_archivo)
+
+
+def obtener_nombre_descarga(carpeta: str):
+    # * means all if need specific format then *.csv
+    lista_de_archivos = glob.glob(carpeta+'/*')
+    nombre_archivo = max(
+        lista_de_archivos, key=os.path.getctime).replace('\\', '/')
+
+    return nombre_archivo

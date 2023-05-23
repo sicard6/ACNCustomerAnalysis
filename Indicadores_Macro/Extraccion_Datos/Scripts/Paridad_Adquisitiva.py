@@ -40,11 +40,12 @@ def extraer_PA(driver: sel.webdriver.Edge):
         By.XPATH, './/a[@class="download-indicator-button"]').click()
 
     time.sleep(5)
+    driver.quit()
 
-    lista_de_archivos = glob.glob('/Users/'+os.getlogin()+'/Downloads/*')
-    fuente = max(lista_de_archivos, key=os.path.getctime).replace('\\', '/')
-
-    os.rename(fuente, path+'/Data/Raw/Paridad_Adquisitiva.csv')
+    fuente_archivo = bs.obtener_nombre_descarga(
+        '/Users/'+os.getlogin()+'/Downloads')
+    bs.guardar_archivo(fuente_archivo, path +
+                       '/Data/Raw/Paridad_Adquisitiva.csv')
 
 
 # %%

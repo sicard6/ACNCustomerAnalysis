@@ -22,49 +22,10 @@ df = pd.read_csv(path+'/data/curated/curated_database.csv',
 # Hasta el momento la única columna procesada ha sido el Contenido
 columna = 'Contenido'
 # columna = sys[1]
-df[f'{columna} lematizado'] = df[f'{columna} lematizado'].apply(
-    lambda x: x.replace('[', '').replace(']', '').replace('\'', '').split(', '))
-df[f'{columna} procesado'] = df[f'{columna} procesado'].apply(
-    lambda x: x.replace('[', '').replace(']', '').replace('\'', '').split(', '))
-dictionary = Dictionary(df[f'{columna} lematizado'])
-# Filtrar los tokens de baja y alta frecuencia. Limitar el vocabulario
-# a un máximo de 100 palabras
-dictionary.filter_extremes(no_below=5, no_above=0.5)
-# Contar el número de ocurrencias de cada palabra única
-corpus = [dictionary.doc2bow(doc) for doc in df[f'{columna} lematizado']]
-
-
-bigram_measure = nltk.collocations.BigramAssocMeasures()
-
-finder = nltk.collocations.BigramCollocationFinder\
-    .from_documents(df[f'{columna} procesado'])
-
-# Filtrar aquellos que ocurren al menos 50 veces
-finder.apply_freq_filter(50)
-bigram_scores = finder.score_ngrams(bigram_measure.pmi)
-
-
-trigram_measure = nltk.collocations.TrigramAssocMeasures()
-
-finder = nltk.collocations.TrigramCollocationFinder\
-    .from_documents(df[f'{columna} procesado'])
-
-# Filtrar aquellos que ocurren al menos 50 veces
-finder.apply_freq_filter(50)
-trigram_scores = finder.score_ngrams(trigram_measure.pmi)
-
-
-bigram_pmi = pd.DataFrame(bigram_scores)
-bigram_pmi.columns = ['bigram', 'pmi']
-bigram_pmi.sort_values(by='pmi', axis=0, ascending=False, inplace=True)
-
-
-trigram_pmi = pd.DataFrame(trigram_scores)
-trigram_pmi.columns = ['trigram', 'pmi']
-trigram_pmi.sort_values(by='pmi', axis=0, ascending=False, inplace=True)
-
 
 # Filtro de bigramas de estructuras de tipo sustantivo
+
+
 def bigram_filter(bigram):
     """Función para identificar si alguna palabra del bigrama los sustantivos
 
@@ -105,24 +66,7 @@ def trigram_filter(trigram):
     return True
 
 
-# Elija los 500 mejores ngramas, en este caso clasificados por PMI, que tengan estructuras similares a sustantivos.
-filtered_bigram = bigram_pmi[bigram_pmi.apply(lambda bigram:
-                                              bigram_filter(bigram['bigram'])
-                                              and bigram.pmi > 5, axis=1)][:500]
-
-filtered_trigram = trigram_pmi[trigram_pmi.apply(lambda trigram:
-                                                 trigram_filter(
-                                                     trigram['trigram'])
-                                                 and trigram.pmi > 5, axis=1)][:500]
-
-
-bigrams = [' '.join(x) for x in filtered_bigram.bigram.values if len(
-    x[0]) > 2 or len(x[1]) > 2]
-trigrams = [' '.join(x) for x in filtered_trigram.trigram.values if len(
-    x[0]) > 2 or len(x[1]) > 2 and len(x[2]) > 2]
-
-
-def replace_ngram(x):
+def replace_ngram(x, trigrams, bigrams):
     """FUnción para reemplazar las palabras por los bigramas o trigramas
 
     Args:
@@ -136,12 +80,6 @@ def replace_ngram(x):
     for gram in bigrams:
         x = x.replace(gram, '_'.join(gram.split()))
     return x
-
-
-reviews_w_ngrams = df.copy()
-
-reviews_w_ngrams['Contenido'] = reviews_w_ngrams['Contenido'].apply(
-    lambda x: replace_ngram(x))
 
 
 def procesamiento(columna: str, df: pd.DataFrame):
@@ -197,9 +135,69 @@ def procesamiento(columna: str, df: pd.DataFrame):
         lambda x: [token.text for token in x])
 
 
-procesamiento('Contenido', reviews_w_ngrams)
-reviews_w_ngrams.index.name = 'ID_Articulo'
+def procesamiento_ngrams(df: pd.DataFrame = df, columna: str = 'Contenido'):
+    df[f'{columna} lematizado'] = df[f'{columna} lematizado'].apply(
+        lambda x: x.replace('[', '').replace(']', '').replace('\'', '').split(', '))
+    df[f'{columna} procesado'] = df[f'{columna} procesado'].apply(
+        lambda x: x.replace('[', '').replace(']', '').replace('\'', '').split(', '))
+    dictionary = Dictionary(df[f'{columna} lematizado'])
+    # Filtrar los tokens de baja y alta frecuencia. Limitar el vocabulario
+    # a un máximo de 100 palabras
+    dictionary.filter_extremes(no_below=5, no_above=0.5)
+    # Contar el número de ocurrencias de cada palabra única
+    corpus = [dictionary.doc2bow(doc) for doc in df[f'{columna} lematizado']]
 
+    bigram_measure = nltk.collocations.BigramAssocMeasures()
+
+    finder = nltk.collocations.BigramCollocationFinder\
+        .from_documents(df[f'{columna} procesado'])
+
+    # Filtrar aquellos que ocurren al menos 50 veces
+    finder.apply_freq_filter(50)
+    bigram_scores = finder.score_ngrams(bigram_measure.pmi)
+
+    trigram_measure = nltk.collocations.TrigramAssocMeasures()
+
+    finder = nltk.collocations.TrigramCollocationFinder\
+        .from_documents(df[f'{columna} procesado'])
+
+    # Filtrar aquellos que ocurren al menos 50 veces
+    finder.apply_freq_filter(50)
+    trigram_scores = finder.score_ngrams(trigram_measure.pmi)
+
+    bigram_pmi = pd.DataFrame(bigram_scores)
+    bigram_pmi.columns = ['bigram', 'pmi']
+    bigram_pmi.sort_values(by='pmi', axis=0, ascending=False, inplace=True)
+
+    trigram_pmi = pd.DataFrame(trigram_scores)
+    trigram_pmi.columns = ['trigram', 'pmi']
+    trigram_pmi.sort_values(by='pmi', axis=0, ascending=False, inplace=True)
+
+    # Elija los 500 mejores ngramas, en este caso clasificados por PMI, que tengan estructuras similares a sustantivos.
+    filtered_bigram = bigram_pmi[bigram_pmi.apply(lambda bigram:
+                                                  bigram_filter(
+                                                      bigram['bigram'])
+                                                  and bigram.pmi > 5, axis=1)][:500]
+
+    filtered_trigram = trigram_pmi[trigram_pmi.apply(lambda trigram:
+                                                     trigram_filter(
+                                                         trigram['trigram'])
+                                                     and trigram.pmi > 5, axis=1)][:500]
+
+    bigrams = [' '.join(x) for x in filtered_bigram.bigram.values if len(
+        x[0]) > 2 or len(x[1]) > 2]
+    trigrams = [' '.join(x) for x in filtered_trigram.trigram.values if len(
+        x[0]) > 2 or len(x[1]) > 2 and len(x[2]) > 2]
+
+    reviews_w_ngrams = df.copy()
+
+    reviews_w_ngrams['Contenido'] = reviews_w_ngrams['Contenido'].apply(
+        lambda x: replace_ngram(x, trigrams, bigrams))
+
+    procesamiento('Contenido', reviews_w_ngrams)
+    reviews_w_ngrams.index.name = 'ID_Articulo'
+
+    return reviews_w_ngrams
 # %%
 # EXTRAER Y ASIGNAR TÓPICOS POR CLIENTES
 
@@ -314,6 +312,8 @@ def modelo_lda(df: pd.DataFrame, columna: str, filtro_inf: int = 1, filtro_sup: 
 
 
 def main():
+    reviews_w_ngrams = procesamiento_ngrams()
+    print('Corrio los ngramas')
     # Guardar las palabras correspondientes a cada tópico
     # y el tópico al que corresponde a cada artículo
     topicos_general = {}
@@ -362,4 +362,6 @@ def main():
 
 if __name__ == '__main__':
     # freeze_support()
+    print('entro al main')
     main()
+    print('corrio el main')
