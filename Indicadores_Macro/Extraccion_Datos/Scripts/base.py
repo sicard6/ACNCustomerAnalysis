@@ -8,10 +8,10 @@ import time
 # ---------------------------------------------------------
 
 path = 'C:/Users/'+os.getlogin() + \
-    '/OneDrive - Accenture/ACNCustomerAnalysis/Medios_Comunicacion'
+    '/OneDrive - Accenture/ACNCustomerAnalysis/Indicadores_Macro'
 
 
-def ejecutar_driver(url: str, notebook: bool = False):
+def ejecutar_driver(url: str):
     """Función para abrir el navegador
 
     Args:
@@ -24,14 +24,8 @@ def ejecutar_driver(url: str, notebook: bool = False):
     try:
         driver = sel.webdriver.Edge()
     except:
-        if notebook:
-            cwd = os.getcwd()
-            path = os.path.join(cwd, 'msedgedriver.exe')
-            driver = sel.webdriver.Edge(
-                executable_path=path.replace("\\\\", "/"))
-        else:
-            driver = sel.webdriver.Edge(
-                executable_path=r"Medios_comunicacion/Web_Scraping/Scripts/msedgedriver.exe")
+        driver = sel.webdriver.Edge(
+            executable_path=path+"/Extraccion_Datos/msedgedriver.exe")
 
     driver.get(url)
     time.sleep(2)

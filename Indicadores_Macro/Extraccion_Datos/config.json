@@ -1,0 +1,20 @@
+{
+  "Indicadores": [
+    {
+      "Indicador": "IVA",
+      "Fecha_inicio": ["01-01-1990"]
+    },
+    {
+      "Indicador": "Paridad_Adquisitiva",
+      "Fecha_inicio": ["01-01-1990"]
+    },
+    {
+      "Indicador": "Salario_Minimo",
+      "Fecha_inicio": ["01-01-1990"]
+    },
+    {
+      "Indicador": "UVR",
+      "Fecha_inicio": ["01-01-1990"]
+    }
+  ]
+}
