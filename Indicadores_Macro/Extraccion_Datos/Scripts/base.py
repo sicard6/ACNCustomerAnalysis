@@ -48,3 +48,9 @@ def obtener_nombre_descarga(carpeta: str):
         lista_de_archivos, key=os.path.getctime).replace('\\', '/')
 
     return nombre_archivo
+
+
+def wait_for_downloads():
+    while any([filename.endswith(".crdownload") for filename in
+               os.listdir("/Users/"+os.getlogin()+"/Downloads")]):
+        time.sleep(2)

@@ -1,7 +1,3 @@
-# %% [markdown]
-# ### Paridad adquisitiva (varios países)
-# [Link](https://data.oecd.org/conversion/purchasing-power-parities-ppp.htm)
-
 # %%
 import base as bs
 from selenium.webdriver.common.by import By
@@ -12,22 +8,20 @@ import sys
 import os
 
 # %%
-path = 'C:/Users/'+os.getlogin() + \
-    '/OneDrive - Accenture/ACNCustomerAnalysis/Indicadores_Macro'
-
-# start_date = sys.argv[1]
-# end_date = sys.argv[2]
-
-# %%
 
 
 def extraer(start_date: str, end_date: str):
     """Función que ingresa a la página de la OECD y descarga las
     los datos de paridad adquisitiva. 
-    Almacena el arcivo en la carpeta de data cruda.
+    Extrae la información de interes y la almacena en el Data Frame.
 
     Args:
-        driver (sel.webdriver.Edge): driver de selenium
+        start_date (str): Fecha desde la que se obtendrán los datos.
+        end_date (str): Fecha hasta la que se obtendrán los datos.
+
+    Returns:
+        pd.DataFrame: Data Frame con 5 columnas:
+        date | Granularidad | Indicador | Unidad | Valor
     """
     driver = bs.ejecutar_driver(
         'https://data.oecd.org/conversion/purchasing-power-parities-ppp.htm')
@@ -67,9 +61,7 @@ def extraer(start_date: str, end_date: str):
 
     df = df.loc[start:end, ['date', 'Granularidad', 'Indicador',
                             'Unidad', 'Valor']].reset_index().drop(['index'], axis=1)
-    # bs.guardar_archivo(fuente_archivo, path+'/Data/Raw/Paridad_Adquisitiva.csv')
+
+    os.remove(fuente_archivo)
+
     return df
-
-
-# %%
-# extraer_PA(start_date, end_date)

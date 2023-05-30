@@ -1,7 +1,3 @@
-# %% [markdown]
-# ### Salario minimo
-# [Link](https://totoro.banrep.gov.co/analytics/saw.dll?Portal&PortalPath=%2Fshared%2FDashboards_T%2FD_Estad%C3%ADsticas%2FEstad%C3%ADsticas&NQUser=publico&NQPassword=publico123&lang=es&page=Actividad%20econ%C3%B3mica,%20mercado%20laboral%20y%20cuentas%20financieras&pagina=Salarios)
-
 # %%
 import base as bs
 from selenium.webdriver.common.by import By
@@ -12,16 +8,21 @@ import sys
 import os
 
 # %%
-path = 'C:/Users/'+os.getlogin() + \
-    '/OneDrive - Accenture/ACNCustomerAnalysis/Indicadores_Macro'
-
-# start_date = sys.argv[1]
-# end_date = sys.argv[2]
-
-# %%
 
 
 def extraer(start_date: str, end_date: str):
+    """Función que ingresa a la página del banco de la república y descarga las
+    los datos de salario mínimo. 
+    Extrae la información de interes y la almacena en el Data Frame.
+
+    Args:
+        start_date (str): Fecha desde la que se obtendrán los datos.
+        end_date (str): Fecha hasta la que se obtendrán los datos.
+
+    Returns:
+        pd.DataFrame: Data Frame con 5 columnas:
+        date | Granularidad | Indicador | Unidad | Valor
+    """
     driver = bs.ejecutar_driver('https://totoro.banrep.gov.co/analytics/saw.dll?Portal&PortalPath=%2Fshared%2FDashboards_T%2FD_Estad%C3%ADsticas%2FEstad%C3%ADsticas&NQUser=publico&NQPassword=publico123&lang=es&page=Actividad%20econ%C3%B3mica,%20mercado%20laboral%20y%20cuentas%20financieras&pagina=Salarios')
     frame = driver.find_element(By.XPATH, './/iframe[@id="frame_dashboard"]')
     driver.switch_to.frame(frame)
@@ -59,10 +60,7 @@ def extraer(start_date: str, end_date: str):
 
     df = df.loc[start:end, ['date', 'Granularidad', 'Indicador',
                             'Unidad', 'Valor']].reset_index().drop(['index'], axis=1)
-    # bs.guardar_archivo(fuente_archivo, path+'/Data/Raw/Salario_Minimo.xlsx')
+
+    os.remove(fuente_archivo)
 
     return df
-
-
-# %%
-# extraer_salario(start_date, end_date)

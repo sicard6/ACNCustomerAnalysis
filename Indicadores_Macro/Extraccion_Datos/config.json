@@ -15,6 +15,22 @@
     {
       "Indicador": "UVR",
       "Fecha_inicio": ["01-01-1990"]
+    },
+    {
+      "Indicador": "Brent",
+      "Fecha_inicio": ["01-01-1990"]
+    },
+    {
+      "Indicador": "Inflacion",
+      "Fecha_inicio": ["01-01-1990"]
+    },
+    {
+      "Indicador": "TRM",
+      "Fecha_inicio": ["01-01-1990"]
+    },
+    {
+      "Indicador": "Tasa_Desempleo",
+      "Fecha_inicio": ["01-01-1990"]
     }
   ]
 }

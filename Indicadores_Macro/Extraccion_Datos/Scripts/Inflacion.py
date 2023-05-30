@@ -1,35 +1,17 @@
-# %% [markdown]
-# ### Inflación
-# [Link](https://www.banrep.gov.co/es/estadisticas/inflacion-total-y-meta)
-
 # %%
-import base as bs
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from datetime import datetime
-import selenium as sel
+import pandas as pd
+import base as bs
 import time
-import glob
-import sys
 import os
 
-cwd = os.getcwd()
-cwd = cwd.replace("Notebooks", "Scripts")
-sys.path.insert(0, cwd.replace("\\\\", "\\"))
-
-# %%
-path = 'C:/Users/'+os.getlogin() + \
-    '/OneDrive - Accenture/ACNCustomerAnalysis/Indicadores_Macro'
-
-# %%
-driver = bs.ejecutar_driver(
-    'https://totoro.banrep.gov.co/analytics/saw.dll?Portal&PortalPath=%2Fshared%2FDashboards_T%2FD_Estad%C3%ADsticas%2FEstad%C3%ADsticas&NQUser=publico&NQPassword=publico123&lang=es&page=Precios%20e%20inflaci%C3%B3n')
-
 # %%
 
 
-def extraer_inflacion(driver: sel.webdriver.Edge):
+def extraer(start_date: str, end_date: str):
+    driver = bs.ejecutar_driver(
+        'https://totoro.banrep.gov.co/analytics/saw.dll?Portal&PortalPath=%2Fshared%2FDashboards_T%2FD_Estad%C3%ADsticas%2FEstad%C3%ADsticas&NQUser=publico&NQPassword=publico123&lang=es&page=Precios%20e%20inflaci%C3%B3n')
+
     frame = driver.find_element(By.XPATH, './/iframe[@id="frame_dashboard"]')
     driver.switch_to.frame(frame)
     driver.find_elements(By.XPATH, '//span[@id="shielded"]//a')[2].click()
@@ -39,8 +21,32 @@ def extraer_inflacion(driver: sel.webdriver.Edge):
 
     fuente_archivo = bs.obtener_nombre_descarga(
         '/Users/'+os.getlogin()+'/Downloads')
-    bs.guardar_archivo(fuente_archivo, path+'/Data/Raw/Inflacion.xlsx')
+    df = pd.read_excel(fuente_archivo, header=7)
+    df.drop(df.tail(8).index, inplace=True)
+    df['date'] = df['Año(aaaa)-Mes(mm)'].map(lambda x: '01-' +
+                                              str(x)[4:]+'-'+str(x)[:4])
 
+    aux_1 = start_date.replace(start_date[:2], '01')
+    aux_2 = end_date.replace(end_date[:2], '01')
 
-# %%
-extraer_inflacion(driver)
+    try:
+        start = df[df['date'] == aux_1].index[0]
+    except IndexError:
+        start = 0
+
+    try:
+        end = df[df['date'] == aux_2].index[0]
+    except IndexError:
+        end = len(df) - 1
+
+    df['Granularidad'] = 'Mensual'
+    df['Indicador'] = 'Inflación'
+    df['Unidad'] = '%'
+    df.rename(columns={'Inflación total 1': 'Valor'}, inplace=True)
+
+    df = df.loc[start:end, ['date', 'Granularidad', 'Indicador',
+                            'Unidad', 'Valor']].reset_index().drop(['index'], axis=1)
+
+    os.remove(fuente_archivo)
+
+    return df

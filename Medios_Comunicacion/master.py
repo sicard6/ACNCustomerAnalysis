@@ -1,9 +1,8 @@
 # %%
 import os
 # %%
-
-path = "C:/Users/' + os.getlogin() + '/OneDrive - Accenture/ACNCustomerAnalysis/Medios_Comunicacion"
-
-os.system(f"python" + path + "/Web_Scraping/Scripts/master.py")
-os.system(f"python" + path + "/NLP_Analitycs/Scripts/NLP.py")
-os.system(f"python" + path + "/NLP_Analitycs/Scripts/Topicos.py")
+# Automatización del proceso de extracción y procesamiento de Medios de Comunicación
+os.system("python Medios_Comunicacion/Web_Scraping/Scripts/master.py")
+os.system("python Medios_Comunicacion/NLP_Analitycs/Scripts/NLP.py")
+os.system("python Medios_Comunicacion/NLP_Analitycs/Scripts/Topicos.py")
+# %%
