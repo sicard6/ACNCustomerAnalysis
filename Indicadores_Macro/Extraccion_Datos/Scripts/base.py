@@ -1,5 +1,6 @@
 import selenium as sel
-import os as os
+import os
+import sys
 import glob
 import time
 
@@ -7,8 +8,8 @@ import time
 # ------------- GLOBAL ------------------------------------
 # ---------------------------------------------------------
 
-path = 'C:/Users/'+os.getlogin() + \
-    '/OneDrive - Accenture/ACNCustomerAnalysis/Indicadores_Macro'
+base_path = os.getcwd()
+path_indicadores = os.path.join(base_path, "Indicadores_Macro")
 
 
 def ejecutar_driver(url: str):
@@ -25,7 +26,7 @@ def ejecutar_driver(url: str):
         driver = sel.webdriver.Edge()
     except:
         driver = sel.webdriver.Edge(
-            executable_path=path+"/Extraccion_Datos/msedgedriver.exe")
+            executable_path=os.path.join(path_indicadores, "Extraccion_Datos", "msedgedriver.exe"))
 
     driver.get(url)
     time.sleep(2)

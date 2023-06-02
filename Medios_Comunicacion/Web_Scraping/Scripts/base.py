@@ -15,7 +15,8 @@ from selenium.webdriver.common.by import By
 # ------------- GLOBAL ------------------------------------
 # ---------------------------------------------------------
 
-path = 'C:/Users/'+os.getlogin()+'/OneDrive - Accenture/ACNCustomerAnalysis/Medios_Comunicacion'
+base_path = os.getcwd()
+path_medios = os.path.join(base_path, "Medios_Comunicacion")
 
 def existedb(url: str, fuente: str, empresa: str):
     """Funcion que verifica si una url existe en la base de datos
@@ -28,7 +29,7 @@ def existedb(url: str, fuente: str, empresa: str):
         Bool: False si la url no existe o no encuentra la base de datos, True si no existe
     """
     try:
-        db = pd.read_csv(path+f"/data/raw/{fuente}.csv", encoding='utf-8-sig')
+        db = pd.read_csv(os.path.join(path_medios, "data", "raw", f"{fuente}.csv"), encoding='utf-8-sig')
     except FileNotFoundError:
         return False
     else:
@@ -54,11 +55,11 @@ def writeData(nombre_archivo: str, datos: pd.DataFrame):
         datos (pd.DataFrame): datos a ser concatenados o guardados como csv
     """
     try:
-        df = pd.read_csv(path+f'/data/raw/{nombre_archivo}.csv', index_col=[0])
+        df = pd.read_csv(os.path.join(path_medios, "data", "raw", f"{nombre_archivo}.csv"), index_col=[0])
         df = pd.concat([df, datos], ignore_index=True)
-        df.to_csv(path+f'/data/raw/{nombre_archivo}.csv')
+        df.to_csv(os.path.join(path_medios, "data", "raw", f"{nombre_archivo}.csv"))
     except FileNotFoundError:
-        datos.to_csv(path+f'/data/raw/{nombre_archivo}.csv')
+        datos.to_csv(os.path.join(path_medios, "data", "raw", f"{nombre_archivo}.csv"))
  
 def ejecutar_driver(url: str):
     """Función para abrir el navegador
@@ -73,7 +74,7 @@ def ejecutar_driver(url: str):
     try:
         driver = sel.webdriver.Edge()
     except:
-        driver = sel.webdriver.Edge(executable_path=path+"/Web_Scraping/msedgedriver.exe")
+        driver = sel.webdriver.Edge(executable_path = os.path.join(path_medios, "Web_Scraping", "msedgedriver.exe"))
         
     driver.get(url)
     time.sleep(2)

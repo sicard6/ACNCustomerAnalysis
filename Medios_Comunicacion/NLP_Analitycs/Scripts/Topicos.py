@@ -13,10 +13,11 @@ import sys
 
 # %%
 # INCLUIR BIGRAMAS Y TRIGRAMAS EN EL DICCIONARIO PARA LOS TÓPICOS
-path = 'C:/Users/'+os.getlogin() + \
-    '/OneDrive - Accenture/ACNCustomerAnalysis/Medios_Comunicacion'
+base_path = os.getcwd()
+path_medios = os.path.join(base_path, "Medios_Comunicacion")
+
 # Importar documento a procesar
-df = pd.read_csv(path+'/data/curated/curated_database.csv',
+df = pd.read_csv(os.path.join(path_medios, "data", "curated", "curated_database.csv"),
                  encoding='utf-8-sig', index_col=[0])
 
 # Hasta el momento la única columna procesada ha sido el Contenido
@@ -112,7 +113,7 @@ def procesamiento(columna: str, df: pd.DataFrame):
         lambda x: [token for token in x if len(token) > 3 and token.is_alpha])
     # Remover stopwords (combinación de contexto y spacy).
     # Convertir Token a str
-    with open(path+'/NLP_Analitycs/Scripts/sw_es.txt', 'r', encoding='utf-8') as file:
+    with open(os.path.join(path_medios, "NLP_Analitycs", "Scripts", "sw_es.txt"), 'r', encoding='utf-8') as file:
         stop_words_contexto = {line.split(None, 1)[0] for line in file}
     es.Defaults.stop_words |= stop_words_contexto
     df[f'{columna} procesado'] = df[f'{columna} procesado'].apply(
@@ -355,9 +356,10 @@ def main():
     df_topicos = df_topicos.set_index('ID_Articulo')
     df_dict_topicos = df_dict_topicos.set_index('ID_Topico')
 
-    df_topicos.to_csv(path+'/data/curated/topicos.csv', encoding='utf-8-sig')
+    df_topicos.to_csv(os.path.join(path_medios, "data",
+                      "curated" "topicos.csv"), encoding='utf-8-sig')
     df_dict_topicos.to_csv(
-        path+'/data/curated/dict_topicos.csv', encoding='utf-8-sig')
+        os.path.join(path_medios, "data", "curated" "topicos.csv"), encoding='utf-8-sig')
 
 
 if __name__ == '__main__':
