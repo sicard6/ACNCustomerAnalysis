@@ -26,7 +26,6 @@ def procesamiento(columna: str, df: pd.DataFrame):
     es = spacy.load('es_core_news_md')
 
     # Etiquetas a remover del texto lematizado
-    # Tags I want to remove from the text
     removal = ['ADV', 'PRON', 'CCONJ', 'PUNCT',
                'PART', 'DET', 'ADP', 'SPACE', 'NUM', 'SYM']
 

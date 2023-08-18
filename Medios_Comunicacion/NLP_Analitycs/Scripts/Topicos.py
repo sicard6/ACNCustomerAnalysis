@@ -25,10 +25,8 @@ columna = 'Contenido'
 # columna = sys[1]
 
 # Filtro de bigramas de estructuras de tipo sustantivo
-
-
 def bigram_filter(bigram):
-    """Función para identificar si alguna palabra del bigrama los sustantivos
+    """Función para identificar si alguna palabra del bigrama es un sustantivo
 
     Args:
         bigram: Token etiquetado con su categoría gramatical
@@ -46,8 +44,6 @@ def bigram_filter(bigram):
     return True
 
 # Filtro de trigramas de estructuras de tipo sustantivo
-
-
 def trigram_filter(trigram):
     """Función para identificar si alguna palabra del trigrama es un los sustantivos
 
